@@ -113,7 +113,6 @@ body {
     padding: 12px;
     border: 1px solid rgba(0,0,0,0.04);
     box-shadow: 0 6px 18px rgba(0,0,0,0.05);
-    position: relative;
 }
 
 .card-header {
@@ -180,9 +179,8 @@ body {
     box-shadow: 0 8px 20px rgba(0, 123, 255, 0.3);
 }
 
-/* RESTAURADO: layout desktop alinhado à esquerda */
+/* Desktop normal */
 @media (min-width: 768px) {
-
     .header {
         flex-direction: row;
         text-align: left;
@@ -210,6 +208,27 @@ body {
         width: auto;
         padding: 18px 40px;
     }
+}
+
+/* FORÇAR DESKTOP PARA EXPORTAÇÃO */
+.force-desktop {
+    width: 1100px !important;
+}
+
+.force-desktop .header {
+    flex-direction: row !important;
+    text-align: left !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    padding: 30px 50px !important;
+    gap: 25px !important;
+}
+
+.force-desktop .grid {
+    display: grid !important;
+    grid-template-columns: repeat(7, 1fr) !important;
+    gap: 15px !important;
+    padding: 0 50px 50px !important;
 }
 </style>
 </head>
@@ -304,23 +323,32 @@ function updateColor(input) {
 function change(v) { dt.setMonth(dt.getMonth() + v); draw(); }
 
 function saveAsImage() {
+    const container = document.getElementById('agendaContainer');
     const btns = document.querySelector('.export-buttons');
     const pickers = document.querySelectorAll('.picker-container');
+
     btns.style.display = 'none';
     pickers.forEach(p => p.style.opacity = '0');
 
-    html2canvas(document.getElementById('agendaContainer'), { 
-        scale: 2, 
-        useCORS: true,
-        backgroundColor: "#f4f4f4" 
-    }).then(canvas => {
-        btns.style.display = 'block';
-        pickers.forEach(p => p.style.opacity = '');
-        const link = document.createElement('a');
-        link.download = `Agenda_Prof_Leo_${months[dt.getMonth()]}.png`;
-        link.href = canvas.toDataURL();
-        link.click();
-    });
+    container.classList.add('force-desktop');
+
+    setTimeout(() => {
+        html2canvas(container, { 
+            scale: 2,
+            useCORS: true,
+            backgroundColor: "#f4f4f4"
+        }).then(canvas => {
+
+            container.classList.remove('force-desktop');
+            btns.style.display = 'block';
+            pickers.forEach(p => p.style.opacity = '');
+
+            const link = document.createElement('a');
+            link.download = `Agenda_Prof_Leo_${months[dt.getMonth()]}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+        });
+    }, 300);
 }
 
 draw();
