@@ -110,8 +110,7 @@ body {
     padding: 12px;
     border: 1px solid rgba(0,0,0,0.04);
     box-shadow: 0 6px 18px rgba(0,0,0,0.05);
-    transition: 0.2s ease;
-    cursor: pointer;
+    position: relative;
 }
 
 .card-header {
@@ -131,7 +130,7 @@ body {
     position: relative;
     width: 28px;
     height: 28px;
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
     font-size: 18px;
@@ -149,7 +148,6 @@ body {
     inset: 0;
     opacity: 0;
     cursor: pointer;
-    border: none;
 }
 
 .editable-area {
@@ -267,11 +265,18 @@ function updateColor(input) {
 function change(v) { dt.setMonth(dt.getMonth() + v); draw(); }
 
 function saveAsImage() {
+    const btns = document.querySelector('.export-buttons');
+    const pickers = document.querySelectorAll('.picker-container');
+    btns.style.display = 'none';
+    pickers.forEach(p => p.style.opacity = '0');
+
     html2canvas(document.getElementById('agendaContainer'), { 
         scale: 2, 
         useCORS: true,
         backgroundColor: "#f4f4f4" 
     }).then(canvas => {
+        btns.style.display = 'block';
+        pickers.forEach(p => p.style.opacity = '');
         const link = document.createElement('a');
         link.download = `Agenda_Prof_Leo_${months[dt.getMonth()]}.png`;
         link.href = canvas.toDataURL();
