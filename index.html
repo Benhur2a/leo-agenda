@@ -125,7 +125,6 @@ body {
     color: var(--primary-red);
 }
 
-/* Emoji escondido por padrão */
 .picker-container {
     position: relative;
     width: 28px;
@@ -221,6 +220,15 @@ body {
 let dt = new Date(2026, 1, 1);
 const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 
+function getContrastColor(hex){
+    hex = hex.replace('#','');
+    const r = parseInt(hex.substr(0,2),16);
+    const g = parseInt(hex.substr(2,2),16);
+    const b = parseInt(hex.substr(4,2),16);
+    const yiq = ((r*299)+(g*587)+(b*114))/1000;
+    return yiq >= 128 ? '#000000' : '#FFFFFF';
+}
+
 function draw() {
     const grid = document.getElementById('calendar');
     const title = document.getElementById('monthTitle');
@@ -241,7 +249,7 @@ function draw() {
                 <div class="day-number">${d}</div>
                 <div class="picker-container">
                     🎨
-                    <input type="color" class="color-picker" value="#ffffff" onchange="updateColor(this)">
+                    <input type="color" class="color-picker" value="#ffffff" oninput="updateColor(this)">
                 </div>
             </div>
             <div class="editable-area" contenteditable="true"></div>`;
@@ -259,7 +267,12 @@ function draw() {
 
 function updateColor(input) {
     const card = input.closest('.day-card');
-    card.style.backgroundColor = input.value;
+    const color = input.value;
+    card.style.backgroundColor = color;
+
+    const textColor = getContrastColor(color);
+    card.querySelector('.editable-area').style.color = textColor;
+    card.querySelector('.day-number').style.color = textColor;
 }
 
 function change(v) { dt.setMonth(dt.getMonth() + v); draw(); }
