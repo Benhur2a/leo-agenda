@@ -27,18 +27,13 @@
             width: 100%;
             max-width: 1100px;
             background: var(--glass);
+            backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
             border-radius: 25px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             overflow: hidden;
             display: flex;
             flex-direction: column;
-        }
-
-        /* Estilo Desktop forçado para o Print */
-        .container.printing {
-            width: 1100px !important;
-            max-width: none !important;
         }
 
         .header {
@@ -52,58 +47,84 @@
             gap: 15px;
         }
 
-        .container.printing .header { flex-direction: row; text-align: left; padding: 30px 50px; height: 120px; justify-content: space-between; }
-
         .candidate-info { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-        .container.printing .candidate-info { flex-direction: row; gap: 25px; }
 
         .photo-slot {
             width: 120px; height: 120px;
             background: #eee; border-radius: 50%;
             border: 4px solid white; overflow: hidden; 
-            flex-shrink: 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            flex-shrink: 0; z-index: 10;
         }
-        .container.printing .photo-slot { width: 180px; height: 180px; margin-top: 40px; border-width: 6px; }
-        
         .photo-slot img { width: 100%; height: 100%; object-fit: cover; }
 
-        .name-box h1 { margin: 0; font-size: 1.8rem; font-weight: 900; text-transform: uppercase; }
-        .container.printing .name-box h1 { font-size: 2.5rem; }
+        .name-box h1 { margin: 0; font-size: 1.8rem; font-weight: 900; text-transform: uppercase; line-height: 1.1; }
+        .subheadline { font-size: 0.9rem; font-weight: 400; opacity: 0.9; text-transform: uppercase; }
 
-        .nav { padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .nav {
+            padding: 15px; display: flex; justify-content: space-between;
+            align-items: center; background: rgba(255,255,255,0.3);
+        }
         .nav h2 { margin: 0; font-size: 1.2rem; color: var(--dark-red); font-weight: 800; }
+        .nav button { background: white; border: 1px solid #ddd; padding: 8px 15px; border-radius: 10px; font-weight: bold; cursor: pointer; }
 
         .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 15px; }
-        .container.printing .grid { grid-template-columns: repeat(7, 1fr) !important; padding: 0 50px 50px; gap: 15px; }
-
         .day-label { display: none; }
-        .container.printing .day-label { display: block; text-align: center; font-weight: 800; color: #999; font-size: 0.8rem; }
 
         .day-card {
             background: rgba(255,255,255,0.7);
             min-height: 120px; border-radius: 18px;
             border: 1px solid rgba(0,0,0,0.05);
             display: flex; flex-direction: column;
+            transition: all 0.2s ease;
         }
 
         .sunday { background: #fff0f0 !important; }
-        .card-header { display: flex; justify-content: space-between; padding: 10px; }
-        .day-number { font-size: 1.2rem; font-weight: 900; color: var(--primary-red); }
+        .sunday .day-number { color: #ff0000 !important; }
 
-        .picker-container { position: relative; display: flex; align-items: center; }
+        .card-header {
+            display: flex; justify-content: space-between;
+            align-items: center; padding: 10px 12px 5px;
+        }
+
+        .day-number { font-size: 1.2rem; font-weight: 900; color: #ccc; }
+        .active-month .day-number { color: var(--primary-red); }
+
+        /* Oculta o emoji e o seletor por padrão */
+        .picker-container {
+            position: relative; opacity: 0; transition: opacity 0.2s;
+            display: flex; align-items: center; font-size: 1.1rem;
+        }
+        .day-card:hover .picker-container, .day-card:focus-within .picker-container { opacity: 1; }
         .color-picker { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 
-        .editable-area { flex-grow: 1; padding: 0 12px 12px; font-size: 0.9rem; outline: none; min-height: 60px; }
+        .editable-area {
+            flex-grow: 1; padding: 0 12px 12px; font-size: 0.9rem; 
+            color: #444; outline: none; min-height: 60px;
+        }
 
-        .export-buttons { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; z-index: 1000; }
-        .save-image-btn { background: #007bff; color: white; width: 100%; padding: 16px; border-radius: 30px; border: none; font-weight: 900; }
+        .export-buttons {
+            position: fixed; bottom: 20px; left: 50%;
+            transform: translateX(-50%); width: 90%; z-index: 1000;
+        }
 
+        .save-image-btn {
+            background: #007bff; color: white; width: 100%;
+            padding: 16px; border-radius: 30px; border: none; 
+            font-weight: 900; box-shadow: 0 8px 20px rgba(0, 123, 255, 0.3);
+        }
+
+        /* AJUSTES DESKTOP */
         @media (min-width: 768px) {
+            body { padding: 40px 20px; }
             .header { flex-direction: row; text-align: left; padding: 30px 50px; height: 120px; }
             .candidate-info { flex-direction: row; gap: 25px; }
-            .photo-slot { width: 180px; height: 180px; margin-top: 40px; }
-            .grid { grid-template-columns: repeat(7, 1fr); padding: 0 50px 50px; }
-            .day-label { display: block; }
+            .photo-slot { width: 180px; height: 180px; margin-top: 40px; border-width: 6px; }
+            .name-box h1 { font-size: 2.5rem; }
+            .subheadline { font-size: 1.1rem; }
+            .nav h2 { font-size: 2rem; }
+            .grid { grid-template-columns: repeat(7, 1fr); padding: 0 50px 50px; gap: 15px; }
+            .day-label { display: block; text-align: center; font-weight: 800; color: #999; font-size: 0.8rem; text-transform: uppercase; padding-bottom: 5px; }
             .export-buttons { width: auto; left: auto; right: 30px; transform: none; }
             .save-image-btn { width: auto; padding: 18px 40px; }
         }
@@ -114,11 +135,16 @@
 <div class="container" id="agendaContainer">
     <header class="header">
         <div class="candidate-info">
-            <div class="photo-slot"><img src="foto-leo.jpg" alt="Professora Léo Simão"></div>
+            <div class="photo-slot">
+                <img src="foto-leo.jpg" alt="Professora Léo Simão">
+            </div>
             <div class="name-box">
                 <h1>Professora Léo Simão</h1>
                 <div class="subheadline">Agenda de Compromissos 2026</div>
             </div>
+        </div>
+        <div class="desktop-only" style="text-align: right; color: rgba(255,255,255,0.7)">
+            <p style="margin:0; font-weight: 700; font-size: 0.9rem; letter-spacing: 1px; color: white;">GESTÃO DE PROJETOS</p>
         </div>
     </header>
 
@@ -140,46 +166,73 @@
     const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
     const days = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
+    function getContrastYIQ(hexcolor){
+        hexcolor = hexcolor.replace("#", "");
+        var r = parseInt(hexcolor.substr(0,2),16), g = parseInt(hexcolor.substr(2,2),16), b = parseInt(hexcolor.substr(4,2),16);
+        return ((r*299)+(g*587)+(b*114))/1000 >= 128 ? 'black' : 'white';
+    }
+
     function draw() {
         const grid = document.getElementById('calendar');
+        const title = document.getElementById('monthTitle');
         grid.innerHTML = '';
-        document.getElementById('monthTitle').innerText = `${months[dt.getMonth()]} ${dt.getFullYear()}`;
+        const m = dt.getMonth(), y = dt.getFullYear();
+        title.innerText = `${months[m]} ${y}`;
+        
         days.forEach(d => grid.innerHTML += `<div class="day-label">${d}</div>`);
-        const first = new Date(dt.getFullYear(), dt.getMonth(), 1).getDay();
-        const last = new Date(dt.getFullYear(), dt.getMonth() + 1, 0).getDate();
+        
+        const first = new Date(y, m, 1).getDay();
+        const last = new Date(y, m + 1, 0).getDate();
+        
         for(let i=0; i<first; i++) grid.innerHTML += `<div class="day-card" style="opacity:0"></div>`;
+
         for(let d=1; d<=last; d++) {
+            const cardDate = new Date(y, m, d);
+            const isSun = cardDate.getDay() === 0 ? 'sunday' : '';
             const card = document.createElement('div');
-            card.className = `day-card ${(new Date(dt.getFullYear(), dt.getMonth(), d).getDay() === 0) ? 'sunday' : ''}`;
-            card.innerHTML = `<div class="card-header"><div class="day-number">${d}</div><div class="picker-container">🎨<input type="color" class="color-picker" value="#ffffff" oninput="this.closest('.day-card').style.backgroundColor=this.value"></div></div><div class="editable-area" contenteditable="true"></div>`;
+            card.className = `day-card active-month ${isSun}`;
+            card.innerHTML = `
+                <div class="card-header">
+                    <div class="day-number">${d}</div>
+                    <div class="picker-container">🎨<input type="color" class="color-picker" value="#ffffff" oninput="updateColor(this)"></div>
+                </div>
+                <div class="editable-area" contenteditable="true"></div>`;
             grid.appendChild(card);
         }
     }
 
+    function updateColor(input) {
+        const card = input.closest('.day-card');
+        card.style.backgroundColor = input.value;
+        const textColor = getContrastYIQ(input.value);
+        card.querySelector('.editable-area').style.color = textColor;
+        card.querySelector('.day-number').style.color = (textColor === 'white') ? 'rgba(255,255,255,0.6)' : '';
+    }
+
     function change(v) { dt.setMonth(dt.getMonth() + v); draw(); }
 
-    async function saveAsImage() {
-        const container = document.getElementById('agendaContainer');
+    function saveAsImage() {
         const btns = document.querySelector('.export-buttons');
-        
-        btns.style.display = 'none'; // Esconde botão
-        container.classList.add('printing'); // Força modo desktop
-        
-        // Espera um pouco para o navegador processar a mudança de estilo
-        await new Promise(r => setTimeout(r, 100));
+        const pickers = document.querySelectorAll('.picker-container');
+        btns.style.display = 'none';
+        pickers.forEach(p => p.style.opacity = '0');
 
-        html2canvas(container, { scale: 2, useCORS: true, width: 1100 }).then(canvas => {
+        html2canvas(document.getElementById('agendaContainer'), { 
+            scale: 2, 
+            useCORS: true,
+            backgroundColor: "#f4f4f4" 
+        }).then(canvas => {
+            btns.style.display = 'block';
+            pickers.forEach(p => p.style.opacity = '');
             const link = document.createElement('a');
-            link.download = `Agenda_${months[dt.getMonth()]}.png`;
+            link.download = `Agenda_Prof_Leo_${months[dt.getMonth()]}.png`;
             link.href = canvas.toDataURL();
             link.click();
-            
-            container.classList.remove('printing'); // Volta ao modo mobile
-            btns.style.display = 'block';
         });
     }
 
     draw();
 </script>
+
 </body>
 </html>
