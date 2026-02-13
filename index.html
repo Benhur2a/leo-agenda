@@ -36,12 +36,6 @@
             flex-direction: column;
         }
 
-        /* Classe especial para o momento do print */
-        .printing-mode {
-            width: 1100px !important;
-            max-width: none !important;
-        }
-
         .header {
             background: linear-gradient(135deg, var(--primary-red), var(--dark-red));
             padding: 20px;
@@ -72,21 +66,15 @@
             align-items: center; background: rgba(255,255,255,0.3);
         }
         .nav h2 { margin: 0; font-size: 1.2rem; color: var(--dark-red); font-weight: 800; }
-        .nav button { background: white; border: 1px solid #ddd; padding: 12px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .nav button { background: white; border: 1px solid #ddd; padding: 10px 18px; border-radius: 10px; font-weight: bold; cursor: pointer; }
 
+        /* Estilo Mobile por padrão */
         .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 15px; }
-        
-        /* Força 7 colunas durante o print */
-        .grid.force-7-cols {
-            grid-template-columns: repeat(7, 1fr) !important;
-        }
-
         .day-label { display: none; }
-        .grid.force-7-cols .day-label { display: block !important; text-align: center; font-weight: 800; color: #999; font-size: 0.8rem; text-transform: uppercase; }
 
         .day-card {
             background: rgba(255,255,255,0.7);
-            min-height: 140px; border-radius: 18px;
+            min-height: 120px; border-radius: 18px;
             border: 1px solid rgba(0,0,0,0.05);
             display: flex; flex-direction: column;
             transition: all 0.2s ease;
@@ -112,7 +100,7 @@
 
         .editable-area {
             flex-grow: 1; padding: 0 12px 12px; font-size: 0.9rem; 
-            color: #444; outline: none; min-height: 80px;
+            color: #444; outline: none; min-height: 60px;
         }
 
         .export-buttons {
@@ -126,6 +114,7 @@
             font-weight: 900; box-shadow: 0 8px 20px rgba(0, 123, 255, 0.3);
         }
 
+        /* Estilo Desktop Real */
         @media (min-width: 768px) {
             body { padding: 40px 20px; }
             .header { flex-direction: row; text-align: left; padding: 30px 50px; height: 120px; }
@@ -189,14 +178,10 @@
         grid.innerHTML = '';
         const m = dt.getMonth(), y = dt.getFullYear();
         title.innerText = `${months[m]} ${y}`;
-        
         days.forEach(d => grid.innerHTML += `<div class="day-label">${d}</div>`);
-        
         const first = new Date(y, m, 1).getDay();
         const last = new Date(y, m + 1, 0).getDate();
-        
         for(let i=0; i<first; i++) grid.innerHTML += `<div class="day-card" style="opacity:0"></div>`;
-
         for(let d=1; d<=last; d++) {
             const cardDate = new Date(y, m, d);
             const isSun = cardDate.getDay() === 0 ? 'sunday' : '';
@@ -223,33 +208,63 @@
     function change(v) { dt.setMonth(dt.getMonth() + v); draw(); }
 
     function saveAsImage() {
-        const container = document.getElementById('agendaContainer');
-        const grid = document.getElementById('calendar');
-        const btns = document.querySelector('.export-buttons');
+        const original = document.getElementById('agendaContainer');
         const pickers = document.querySelectorAll('.picker-container');
         
-        // Ativa modo de print para salvar completo
-        btns.style.display = 'none';
-        pickers.forEach(p => p.style.opacity = '0');
-        container.classList.add('printing-mode');
-        grid.classList.add('force-7-cols');
+        // 1. Clonamos a agenda inteira
+        const clone = original.cloneNode(true);
+        
+        // 2. Aplicamos estilo fixo de Desktop no clone
+        clone.style.width = "1100px";
+        clone.style.position = "absolute";
+        clone.style.top = "-9999px"; // Esconde o clone da vista do usuário
+        clone.style.left = "0";
+        
+        // Ajustamos a grid do clone para 7 colunas forçadas
+        const gridClone = clone.querySelector('.grid');
+        gridClone.style.display = "grid";
+        gridClone.style.gridTemplateColumns = "repeat(7, 1fr)";
+        gridClone.style.padding = "0 50px 50px";
+        gridClone.style.gap = "15px";
+        
+        // Mostramos os labels dos dias (Dom, Seg...) no clone
+        clone.querySelectorAll('.day-label').forEach(l => l.style.display = "block");
+        
+        // Removemos os emojis de paleta do clone para o print ficar limpo
+        clone.querySelectorAll('.picker-container').forEach(p => p.remove());
 
-        html2canvas(container, { 
+        // O cabeçalho do clone deve ser em linha (estilo desktop)
+        const headerClone = clone.querySelector('.header');
+        headerClone.style.flexDirection = "row";
+        headerClone.style.justifyContent = "space-between";
+        headerClone.style.height = "120px";
+        headerClone.style.padding = "30px 50px";
+        headerClone.style.textAlign = "left";
+
+        const photoClone = clone.querySelector('.photo-slot');
+        photoClone.style.width = "180px";
+        photoClone.style.height = "180px";
+        photoClone.style.marginTop = "40px";
+
+        const nameClone = clone.querySelector('.name-box h1');
+        nameClone.style.fontSize = "2.5rem";
+
+        document.body.appendChild(clone);
+
+        // 3. Geramos a imagem a partir do clone (que está formatado como Desktop)
+        html2canvas(clone, { 
             scale: 2, 
             useCORS: true,
             backgroundColor: "#f4f4f4",
-            width: 1100 // Garante largura total no print
+            width: 1100
         }).then(canvas => {
-            // Desativa modo de print e volta ao normal
-            container.classList.remove('printing-mode');
-            grid.classList.remove('force-7-cols');
-            btns.style.display = 'block';
-            pickers.forEach(p => p.style.opacity = '');
-            
             const link = document.createElement('a');
             link.download = `Agenda_Prof_Leo_${months[dt.getMonth()]}.png`;
             link.href = canvas.toDataURL();
             link.click();
+            
+            // 4. Removemos o clone após o uso
+            document.body.removeChild(clone);
         });
     }
 
