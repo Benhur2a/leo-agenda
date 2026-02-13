@@ -121,48 +121,32 @@
             outline: none; overflow-wrap: break-word; cursor: text;
         }
 
-        /* Container para os botões de exportação */
         .export-buttons {
             position: fixed; 
             bottom: 30px; 
             right: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
             z-index: 1000;
         }
 
-        .export-buttons button {
-            background: #25d366; 
+        .save-image-btn {
+            background: #007bff;
             color: white; 
-            padding: 18px 35px;
+            padding: 18px 40px;
             border-radius: 50px; 
             border: none; 
             font-weight: 900;
-            box-shadow: 0 10px 25px rgba(37, 211, 102, 0.3); 
-            cursor: pointer;
-            transition: background 0.3s, transform 0.2s;
-        }
-
-        .export-buttons button:hover {
-            background: #1eaf52;
-            transform: translateY(-2px);
-        }
-
-        /* Botão específico para salvar imagem */
-        .save-image-btn {
-            background: #007bff; /* Azul para diferenciar */
             box-shadow: 0 10px 25px rgba(0, 123, 255, 0.3); 
+            cursor: pointer;
+            transition: all 0.3s;
         }
 
         .save-image-btn:hover {
             background: #0056b3;
+            transform: translateY(-2px);
         }
 
         @media print {
             .export-buttons, .nav button, .picker-container { display: none !important; }
-            body { padding: 0; background: white; }
-            .container { border: none; box-shadow: none; max-width: 100%; border-radius: 0; }
         }
     </style>
 </head>
@@ -195,8 +179,7 @@
 </div>
 
 <div class="export-buttons">
-    <button onclick="saveAsImage()" class="save-image-btn">Salvar como Imagem (PNG)</button>
-    <button onclick="window.print()">Exportar Agenda para WhatsApp</button>
+    <button onclick="saveAsImage()" class="save-image-btn">SALVAR COMO IMAGEM (PNG)</button>
 </div>
 
 <script>
@@ -263,28 +246,28 @@
     function change(v) { dt.setMonth(dt.getMonth() + v); draw(); }
     draw();
 
-    // Nova função para salvar como imagem (PNG)
     function saveAsImage() {
-        // Oculta os botões e o emoji do seletor de cores antes de tirar o print
-        const buttons = document.querySelectorAll('.export-buttons, .picker-container');
-        buttons.forEach(btn => btn.style.display = 'none');
+        const buttons = document.querySelector('.export-buttons');
+        const pickers = document.querySelectorAll('.picker-container');
         
-        // Captura o contêiner principal da agenda
-        html2canvas(document.getElementById('agendaContainer'), {
-            scale: 2, // Aumenta a resolução do print para melhor qualidade
-            useCORS: true // Essencial se a imagem da candidata for de outra origem
-        }).then(function(canvas) {
-            // Restaura a visibilidade dos botões e do emoji
-            buttons.forEach(btn => btn.style.display = '');
+        buttons.style.display = 'none';
+        pickers.forEach(p => p.style.opacity = '0');
 
-            // Cria um link para download
+        html2canvas(document.getElementById('agendaContainer'), {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            backgroundColor: "#ffffff"
+        }).then(function(canvas) {
+            buttons.style.display = 'block';
+            pickers.forEach(p => p.style.opacity = '');
+
             const link = document.createElement('a');
-            link.download = `Agenda_Prof_Leo_Simao_${dt.getMonth() + 1}_${dt.getFullYear()}.png`;
+            link.download = `Agenda_${months[dt.getMonth()]}_Prof_Leo_Simao.png`;
             link.href = canvas.toDataURL('image/png');
             link.click();
         });
     }
-
 </script>
 
 </body>
