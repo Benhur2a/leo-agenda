@@ -17,7 +17,7 @@
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             background: linear-gradient(135deg, #fcebeb 0%, #e8ecf1 50%, #fdeeee 100%);
             margin: 0;
-            padding: 10px; /* Reduzi padding para telas pequenas */
+            padding: 10px;
             display: flex;
             justify-content: center;
             min-height: 100vh;
@@ -29,7 +29,7 @@
             background: var(--glass);
             backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
-            border-radius: 20px;
+            border-radius: 25px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             overflow: hidden;
             display: flex;
@@ -41,124 +41,92 @@
             padding: 20px;
             color: white;
             display: flex;
-            flex-direction: column; /* Coluna por padrão no celular */
+            flex-direction: column;
             align-items: center;
             text-align: center;
             gap: 15px;
         }
 
-        .candidate-info { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            gap: 10px; 
-        }
+        .candidate-info { display: flex; flex-direction: column; align-items: center; gap: 10px; }
 
         .photo-slot {
-            width: 120px; /* Menor no celular para não sumir com o texto */
-            height: 120px;
-            background: #eee; 
-            border-radius: 50%;
-            border: 4px solid white; 
-            overflow: hidden; 
+            width: 120px; height: 120px;
+            background: #eee; border-radius: 50%;
+            border: 4px solid white; overflow: hidden; 
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            flex-shrink: 0;
+            flex-shrink: 0; z-index: 10;
         }
         .photo-slot img { width: 100%; height: 100%; object-fit: cover; }
 
-        .name-box h1 { 
-            margin: 0; font-size: 1.8rem; font-weight: 900; 
-            text-transform: uppercase; line-height: 1.1;
-        }
-        
-        .subheadline {
-            font-size: 0.9rem; font-weight: 400; opacity: 0.9;
-            margin-top: 5px; text-transform: uppercase;
-        }
+        .name-box h1 { margin: 0; font-size: 1.8rem; font-weight: 900; text-transform: uppercase; line-height: 1.1; }
+        .subheadline { font-size: 0.9rem; font-weight: 400; opacity: 0.9; text-transform: uppercase; }
 
         .nav {
-            padding: 15px; 
-            display: flex; 
-            justify-content: space-between;
-            align-items: center; 
-            background: rgba(255,255,255,0.3);
+            padding: 15px; display: flex; justify-content: space-between;
+            align-items: center; background: rgba(255,255,255,0.3);
         }
         .nav h2 { margin: 0; font-size: 1.2rem; color: var(--dark-red); font-weight: 800; }
-        .nav button {
-            background: white; border: 1px solid #ddd; padding: 8px 15px;
-            border-radius: 10px; font-weight: bold; cursor: pointer;
-        }
+        .nav button { background: white; border: 1px solid #ddd; padding: 8px 15px; border-radius: 10px; font-weight: bold; cursor: pointer; }
 
-        /* GRID RESPONSIVO */
-        .grid { 
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); /* 2 colunas no celular */
-            gap: 10px; 
-            padding: 15px; 
-        }
-        
-        .day-label { 
-            display: none; /* Escondido no celular para ganhar espaço */
-        }
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 15px; }
+        .day-label { display: none; }
 
         .day-card {
-            background: white;
-            min-height: 120px; 
-            border-radius: 15px;
-            border: 1px solid #eee;
-            display: flex; 
-            flex-direction: column;
-            padding: 10px;
+            background: rgba(255,255,255,0.7);
+            min-height: 120px; border-radius: 18px;
+            border: 1px solid rgba(0,0,0,0.05);
+            display: flex; flex-direction: column;
+            transition: all 0.2s ease;
         }
 
-        .sunday { background: #fff5f5 !important; }
+        .sunday { background: #fff0f0 !important; }
         .sunday .day-number { color: #ff0000 !important; }
 
         .card-header {
             display: flex; justify-content: space-between;
-            align-items: center; margin-bottom: 5px;
+            align-items: center; padding: 10px 12px 5px;
         }
 
         .day-number { font-size: 1.2rem; font-weight: 900; color: #ccc; }
         .active-month .day-number { color: var(--primary-red); }
 
-        .picker-container { font-size: 1.2rem; cursor: pointer; }
-        .color-picker { width: 30px; height: 30px; border: none; background: none; cursor: pointer; }
+        /* Oculta o emoji e o seletor por padrão */
+        .picker-container {
+            position: relative; opacity: 0; transition: opacity 0.2s;
+            display: flex; align-items: center; font-size: 1.1rem;
+        }
+        .day-card:hover .picker-container, .day-card:focus-within .picker-container { opacity: 1; }
+        .color-picker { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 
         .editable-area {
-            flex-grow: 1; font-size: 0.85rem; color: #444; 
-            outline: none; min-height: 50px;
+            flex-grow: 1; padding: 0 12px 12px; font-size: 0.9rem; 
+            color: #444; outline: none; min-height: 60px;
         }
 
         .export-buttons {
             position: fixed; bottom: 20px; left: 50%;
-            transform: translateX(-50%); width: 90%;
-            z-index: 1000;
+            transform: translateX(-50%); width: 90%; z-index: 1000;
         }
 
         .save-image-btn {
             background: #007bff; color: white; width: 100%;
-            padding: 15px; border-radius: 30px; border: none; 
-            font-weight: 900; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            padding: 16px; border-radius: 30px; border: none; 
+            font-weight: 900; box-shadow: 0 8px 20px rgba(0, 123, 255, 0.3);
         }
 
-        /* AJUSTES PARA DESKTOP (TELAS MAIORES) */
+        /* AJUSTES DESKTOP */
         @media (min-width: 768px) {
             body { padding: 40px 20px; }
             .header { flex-direction: row; text-align: left; padding: 30px 50px; height: 120px; }
             .candidate-info { flex-direction: row; gap: 25px; }
-            .photo-slot { width: 180px; height: 180px; margin-top: 40px; }
+            .photo-slot { width: 180px; height: 180px; margin-top: 40px; border-width: 6px; }
             .name-box h1 { font-size: 2.5rem; }
             .subheadline { font-size: 1.1rem; }
             .nav h2 { font-size: 2rem; }
             .grid { grid-template-columns: repeat(7, 1fr); padding: 0 50px 50px; gap: 15px; }
-            .day-label { display: block; text-align: center; font-weight: 800; color: #999; font-size: 0.8rem; }
+            .day-label { display: block; text-align: center; font-weight: 800; color: #999; font-size: 0.8rem; text-transform: uppercase; padding-bottom: 5px; }
             .export-buttons { width: auto; left: auto; right: 30px; transform: none; }
             .save-image-btn { width: auto; padding: 18px 40px; }
-        }
-
-        @media print {
-            .export-buttons, .nav button, .picker-container { display: none !important; }
         }
     </style>
 </head>
@@ -175,15 +143,15 @@
                 <div class="subheadline">Agenda de Compromissos 2026</div>
             </div>
         </div>
-        <div class="desktop-only" style="text-align: right">
-            <p style="margin:0; font-weight: 700; font-size: 0.9rem; letter-spacing: 1px;">GESTÃO DE PROJETOS</p>
+        <div class="desktop-only" style="text-align: right; color: rgba(255,255,255,0.7)">
+            <p style="margin:0; font-weight: 700; font-size: 0.9rem; letter-spacing: 1px; color: white;">GESTÃO DE PROJETOS</p>
         </div>
     </header>
 
     <div class="nav">
-        <button onclick="change(-1)">←</button>
+        <button onclick="change(-1)">ANTERIOR</button>
         <h2 id="monthTitle">Fevereiro 2026</h2>
-        <button onclick="change(1)">→</button>
+        <button onclick="change(1)">PRÓXIMO</button>
     </div>
 
     <div class="grid" id="calendar"></div>
@@ -198,6 +166,12 @@
     const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
     const days = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
+    function getContrastYIQ(hexcolor){
+        hexcolor = hexcolor.replace("#", "");
+        var r = parseInt(hexcolor.substr(0,2),16), g = parseInt(hexcolor.substr(2,2),16), b = parseInt(hexcolor.substr(4,2),16);
+        return ((r*299)+(g*587)+(b*114))/1000 >= 128 ? 'black' : 'white';
+    }
+
     function draw() {
         const grid = document.getElementById('calendar');
         const title = document.getElementById('monthTitle');
@@ -210,12 +184,7 @@
         const first = new Date(y, m, 1).getDay();
         const last = new Date(y, m + 1, 0).getDate();
         
-        for(let i=0; i<first; i++) {
-            const empty = document.createElement('div');
-            empty.className = 'day-card';
-            empty.style.opacity = '0';
-            grid.appendChild(empty);
-        }
+        for(let i=0; i<first; i++) grid.innerHTML += `<div class="day-card" style="opacity:0"></div>`;
 
         for(let d=1; d<=last; d++) {
             const cardDate = new Date(y, m, d);
@@ -225,7 +194,7 @@
             card.innerHTML = `
                 <div class="card-header">
                     <div class="day-number">${d}</div>
-                    <div class="picker-container"><input type="color" class="color-picker" value="#ffffff" oninput="updateColor(this)"></div>
+                    <div class="picker-container">🎨<input type="color" class="color-picker" value="#ffffff" oninput="updateColor(this)"></div>
                 </div>
                 <div class="editable-area" contenteditable="true"></div>`;
             grid.appendChild(card);
@@ -235,19 +204,28 @@
     function updateColor(input) {
         const card = input.closest('.day-card');
         card.style.backgroundColor = input.value;
-        const r=parseInt(input.value.substr(1,2),16), g=parseInt(input.value.substr(3,2),16), b=parseInt(input.value.substr(5,2),16);
-        card.querySelector('.editable-area').style.color = (r*299+g*587+b*114)/1000 >= 128 ? 'black' : 'white';
+        const textColor = getContrastYIQ(input.value);
+        card.querySelector('.editable-area').style.color = textColor;
+        card.querySelector('.day-number').style.color = (textColor === 'white') ? 'rgba(255,255,255,0.6)' : '';
     }
 
     function change(v) { dt.setMonth(dt.getMonth() + v); draw(); }
 
     function saveAsImage() {
         const btns = document.querySelector('.export-buttons');
+        const pickers = document.querySelectorAll('.picker-container');
         btns.style.display = 'none';
-        html2canvas(document.getElementById('agendaContainer'), { scale: 2, useCORS: true }).then(canvas => {
+        pickers.forEach(p => p.style.opacity = '0');
+
+        html2canvas(document.getElementById('agendaContainer'), { 
+            scale: 2, 
+            useCORS: true,
+            backgroundColor: "#f4f4f4" 
+        }).then(canvas => {
             btns.style.display = 'block';
+            pickers.forEach(p => p.style.opacity = '');
             const link = document.createElement('a');
-            link.download = `Agenda_${months[dt.getMonth()]}.png`;
+            link.download = `Agenda_Prof_Leo_${months[dt.getMonth()]}.png`;
             link.href = canvas.toDataURL();
             link.click();
         });
