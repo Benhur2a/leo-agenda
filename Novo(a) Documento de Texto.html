@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda Oficial - Professora Léo Simão</title>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary-red: #ff2e2e;
+            --dark-red: #8b0000;
+            --glass: rgba(255, 255, 255, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.4);
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #fcebeb 0%, #e8ecf1 50%, #fdeeee 100%);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            background: var(--glass);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 35px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-red), var(--dark-red));
+            padding: 30px 50px; 
+            height: 120px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .candidate-info { display: flex; align-items: center; gap: 25px; }
+
+        .photo-slot {
+            width: 180px; 
+            height: 180px;
+            background: #eee; 
+            border-radius: 50%;
+            border: 6px solid rgba(255,255,255,1); 
+            overflow: hidden; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            flex-shrink: 0;
+            z-index: 10;
+            margin-top: 20px;
+        }
+        .photo-slot img { width: 100%; height: 100%; object-fit: cover; }
+
+        .name-box h1 { 
+            margin: 0; font-size: 2.5rem; font-weight: 900; 
+            letter-spacing: -1px; text-transform: uppercase; line-height: 1;
+        }
+        
+        .subheadline {
+            font-size: 1.1rem; font-weight: 400; opacity: 0.9;
+            margin-top: 5px; letter-spacing: 1px; text-transform: uppercase;
+        }
+
+        .nav {
+            padding: 25px 50px; display: flex; justify-content: space-between;
+            align-items: center; background: rgba(255,255,255,0.2);
+        }
+        .nav h2 { margin: 0; font-size: 2rem; color: var(--dark-red); font-weight: 800; }
+        .nav button {
+            background: white; border: none; padding: 12px 25px;
+            border-radius: 14px; font-weight: bold; cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: 0.3s;
+        }
+
+        .grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 15px; padding: 0 50px 50px; }
+        .day-label { text-align: center; font-weight: 800; font-size: 0.85rem; color: #999; text-transform: uppercase; padding-bottom: 10px; }
+
+        .day-card {
+            background: rgba(255,255,255,0.6);
+            min-height: 150px; border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.5);
+            position: relative; transition: all 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+
+        .sunday { background: rgba(255, 46, 46, 0.08) !important; }
+        .sunday .day-number { color: #ff0000 !important; }
+        .day-card.has-content { border-color: var(--primary-red); border-width: 2px; }
+
+        .card-header {
+            display: flex; justify-content: space-between;
+            align-items: center; padding: 15px 15px 5px;
+        }
+
+        .day-number { font-size: 1.5rem; font-weight: 900; color: #ddd; }
+        .active-month .day-number { color: var(--primary-red); }
+
+        .picker-container {
+            position: relative; display: flex; align-items: center;
+            justify-content: center; cursor: pointer; font-size: 1.2rem;
+            opacity: 0; transition: opacity 0.2s ease;
+        }
+        .day-card:hover .picker-container, .day-card:focus-within .picker-container { opacity: 1; }
+        .color-picker { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+
+        .editable-area {
+            flex-grow: 1; padding: 0 15px 15px;
+            font-size: 0.95rem; color: #444; font-weight: 500;
+            outline: none; overflow-wrap: break-word; cursor: text;
+        }
+
+        /* Container para os botões de exportação */
+        .export-buttons {
+            position: fixed; 
+            bottom: 30px; 
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .export-buttons button {
+            background: #25d366; 
+            color: white; 
+            padding: 18px 35px;
+            border-radius: 50px; 
+            border: none; 
+            font-weight: 900;
+            box-shadow: 0 10px 25px rgba(37, 211, 102, 0.3); 
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .export-buttons button:hover {
+            background: #1eaf52;
+            transform: translateY(-2px);
+        }
+
+        /* Botão específico para salvar imagem */
+        .save-image-btn {
+            background: #007bff; /* Azul para diferenciar */
+            box-shadow: 0 10px 25px rgba(0, 123, 255, 0.3); 
+        }
+
+        .save-image-btn:hover {
+            background: #0056b3;
+        }
+
+        @media print {
+            .export-buttons, .nav button, .picker-container { display: none !important; }
+            body { padding: 0; background: white; }
+            .container { border: none; box-shadow: none; max-width: 100%; border-radius: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="agendaContainer">
+    <header class="header">
+        <div class="candidate-info">
+            <div class="photo-slot">
+                <img src="foto-leo.jpg" alt="Professora Léo Simão">
+            </div>
+            <div class="name-box">
+                <h1>Professora Léo Simão</h1>
+                <div class="subheadline">Agenda de Compromissos 2026</div>
+            </div>
+        </div>
+        <div style="text-align: right">
+            <p style="margin:0; font-weight: 300; font-size: 0.9rem; opacity: 0.8;">PLANEJAMENTO E</p>
+            <p style="margin:0; font-weight: 700; font-size: 1rem; letter-spacing: 1px;">GESTÃO DE PROJETOS</p>
+        </div>
+    </header>
+
+    <div class="nav">
+        <button onclick="change(-1)">ANTERIOR</button>
+        <h2 id="monthTitle">Fevereiro 2026</h2>
+        <button onclick="change(1)">PRÓXIMO</button>
+    </div>
+
+    <div class="grid" id="calendar"></div>
+</div>
+
+<div class="export-buttons">
+    <button onclick="saveAsImage()" class="save-image-btn">Salvar como Imagem (PNG)</button>
+    <button onclick="window.print()">Exportar Agenda para WhatsApp</button>
+</div>
+
+<script>
+    let dt = new Date(2026, 1, 1);
+    const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+    const days = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+
+    function getContrastYIQ(hexcolor){
+        hexcolor = hexcolor.replace("#", "");
+        var r = parseInt(hexcolor.substr(0,2),16);
+        var g = parseInt(hexcolor.substr(2,2),16);
+        var b = parseInt(hexcolor.substr(4,2),16);
+        var yiq = ((r*299)+(g*587)+(b*114))/1000;
+        return (yiq >= 128) ? 'black' : 'white';
+    }
+
+    function draw() {
+        const grid = document.getElementById('calendar');
+        const title = document.getElementById('monthTitle');
+        grid.innerHTML = '';
+        const m = dt.getMonth();
+        const y = dt.getFullYear();
+        title.innerText = `${months[m]} ${y}`;
+        days.forEach(d => grid.innerHTML += `<div class="day-label">${d}</div>`);
+        const first = new Date(y, m, 1).getDay();
+        const last = new Date(y, m + 1, 0).getDate();
+        for(let i=0; i<first; i++) grid.innerHTML += `<div class="day-card" style="opacity:0.1"></div>`;
+        for(let d=1; d<=last; d++) {
+            const currentDayDate = new Date(y, m, d);
+            const isSun = currentDayDate.getDay() === 0 ? 'sunday' : '';
+            const card = document.createElement('div');
+            card.className = `day-card active-month ${isSun}`;
+            card.innerHTML = `
+                <div class="card-header">
+                    <div class="day-number">${d}</div>
+                    <div class="picker-container">🎨<input type="color" class="color-picker" value="#ffffff" oninput="changeCardColor(this)"></div>
+                </div>
+                <div class="editable-area" contenteditable="true" oninput="checkContent(this)"></div>`;
+            grid.appendChild(card);
+        }
+    }
+
+    function checkContent(element) {
+        const card = element.parentElement;
+        element.innerText.trim() !== "" ? card.classList.add('has-content') : card.classList.remove('has-content');
+    }
+
+    function changeCardColor(input) {
+        const card = input.parentElement.parentElement.parentElement;
+        const color = input.value;
+        const textArea = card.querySelector('.editable-area');
+        const dayNum = card.querySelector('.day-number');
+        card.style.backgroundColor = color;
+        card.style.opacity = "1";
+        const textColor = getContrastYIQ(color);
+        textArea.style.color = textColor;
+        if(textColor === 'white') {
+            dayNum.style.color = 'rgba(255,255,255,0.7)';
+        } else {
+            dayNum.style.color = card.classList.contains('sunday') ? '#ff0000' : 'var(--primary-red)';
+        }
+    }
+
+    function change(v) { dt.setMonth(dt.getMonth() + v); draw(); }
+    draw();
+
+    // Nova função para salvar como imagem (PNG)
+    function saveAsImage() {
+        // Oculta os botões e o emoji do seletor de cores antes de tirar o print
+        const buttons = document.querySelectorAll('.export-buttons, .picker-container');
+        buttons.forEach(btn => btn.style.display = 'none');
+        
+        // Captura o contêiner principal da agenda
+        html2canvas(document.getElementById('agendaContainer'), {
+            scale: 2, // Aumenta a resolução do print para melhor qualidade
+            useCORS: true // Essencial se a imagem da candidata for de outra origem
+        }).then(function(canvas) {
+            // Restaura a visibilidade dos botões e do emoji
+            buttons.forEach(btn => btn.style.display = '');
+
+            // Cria um link para download
+            const link = document.createElement('a');
+            link.download = `Agenda_Prof_Leo_Simao_${dt.getMonth() + 1}_${dt.getFullYear()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+    }
+
+</script>
+
+</body>
+</html>
