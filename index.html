@@ -36,6 +36,12 @@
             flex-direction: column;
         }
 
+        /* Classe especial para o momento do print */
+        .printing-mode {
+            width: 1100px !important;
+            max-width: none !important;
+        }
+
         .header {
             background: linear-gradient(135deg, var(--primary-red), var(--dark-red));
             padding: 20px;
@@ -66,14 +72,21 @@
             align-items: center; background: rgba(255,255,255,0.3);
         }
         .nav h2 { margin: 0; font-size: 1.2rem; color: var(--dark-red); font-weight: 800; }
-        .nav button { background: white; border: 1px solid #ddd; padding: 8px 15px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .nav button { background: white; border: 1px solid #ddd; padding: 12px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; }
 
         .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 15px; }
+        
+        /* Força 7 colunas durante o print */
+        .grid.force-7-cols {
+            grid-template-columns: repeat(7, 1fr) !important;
+        }
+
         .day-label { display: none; }
+        .grid.force-7-cols .day-label { display: block !important; text-align: center; font-weight: 800; color: #999; font-size: 0.8rem; text-transform: uppercase; }
 
         .day-card {
             background: rgba(255,255,255,0.7);
-            min-height: 120px; border-radius: 18px;
+            min-height: 140px; border-radius: 18px;
             border: 1px solid rgba(0,0,0,0.05);
             display: flex; flex-direction: column;
             transition: all 0.2s ease;
@@ -90,7 +103,6 @@
         .day-number { font-size: 1.2rem; font-weight: 900; color: #ccc; }
         .active-month .day-number { color: var(--primary-red); }
 
-        /* Oculta o emoji e o seletor por padrão */
         .picker-container {
             position: relative; opacity: 0; transition: opacity 0.2s;
             display: flex; align-items: center; font-size: 1.1rem;
@@ -100,7 +112,7 @@
 
         .editable-area {
             flex-grow: 1; padding: 0 12px 12px; font-size: 0.9rem; 
-            color: #444; outline: none; min-height: 60px;
+            color: #444; outline: none; min-height: 80px;
         }
 
         .export-buttons {
@@ -114,7 +126,6 @@
             font-weight: 900; box-shadow: 0 8px 20px rgba(0, 123, 255, 0.3);
         }
 
-        /* AJUSTES DESKTOP */
         @media (min-width: 768px) {
             body { padding: 40px 20px; }
             .header { flex-direction: row; text-align: left; padding: 30px 50px; height: 120px; }
@@ -212,18 +223,29 @@
     function change(v) { dt.setMonth(dt.getMonth() + v); draw(); }
 
     function saveAsImage() {
+        const container = document.getElementById('agendaContainer');
+        const grid = document.getElementById('calendar');
         const btns = document.querySelector('.export-buttons');
         const pickers = document.querySelectorAll('.picker-container');
+        
+        // Ativa modo de print para salvar completo
         btns.style.display = 'none';
         pickers.forEach(p => p.style.opacity = '0');
+        container.classList.add('printing-mode');
+        grid.classList.add('force-7-cols');
 
-        html2canvas(document.getElementById('agendaContainer'), { 
+        html2canvas(container, { 
             scale: 2, 
             useCORS: true,
-            backgroundColor: "#f4f4f4" 
+            backgroundColor: "#f4f4f4",
+            width: 1100 // Garante largura total no print
         }).then(canvas => {
+            // Desativa modo de print e volta ao normal
+            container.classList.remove('printing-mode');
+            grid.classList.remove('force-7-cols');
             btns.style.display = 'block';
             pickers.forEach(p => p.style.opacity = '');
+            
             const link = document.createElement('a');
             link.download = `Agenda_Prof_Leo_${months[dt.getMonth()]}.png`;
             link.href = canvas.toDataURL();
