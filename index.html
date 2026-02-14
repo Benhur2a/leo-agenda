@@ -36,7 +36,7 @@
             flex-direction: column;
         }
 
-        /* HEADER MOBILE DO SEGUNDO CÓDIGO (Centralizado) */
+        /* HEADER MOBILE (Centralizado) */
         .header {
             background: linear-gradient(135deg, var(--primary-red), var(--dark-red));
             padding: 25px 15px;
@@ -69,7 +69,7 @@
         .nav h2 { margin: 0; font-size: 1.1rem; color: var(--dark-red); font-weight: 800; }
         .nav button { background: white; border: 1px solid #ddd; padding: 10px 16px; border-radius: 14px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
 
-        /* GRID MOBILE DO SEGUNDO CÓDIGO (Flex Column - Uma coluna) */
+        /* GRID MOBILE (Flex Column - Uma coluna) */
         .grid { 
             display: flex; 
             flex-direction: column; 
@@ -79,7 +79,7 @@
         
         .day-label { display: none; }
 
-        /* ESTILO DOS CARDS DO SEGUNDO CÓDIGO */
+        /* ESTILO DOS CARDS */
         .day-card {
             background: rgba(255,255,255,0.85);
             min-height: 120px; border-radius: 20px;
@@ -124,7 +124,7 @@
             font-weight: 900; box-shadow: 0 8px 20px rgba(0, 123, 255, 0.3);
         }
 
-        /* MODO DESKTOP E PRINTING (Mantido para garantir o salvamento correto) */
+        /* MODO DESKTOP */
         @media (min-width: 768px) {
             body { padding: 40px 20px; }
             .header { flex-direction: row; text-align: left; padding: 30px 50px; height: 120px; justify-content: space-between; }
@@ -134,7 +134,6 @@
             .subheadline { font-size: 1.1rem; }
             .nav h2 { font-size: 2rem; }
             
-            /* Aqui volta a ser GRID de 7 colunas */
             .grid { display: grid; grid-template-columns: repeat(7, 1fr); padding: 0 50px 50px; gap: 15px; }
             
             .day-label { display: block; text-align: center; font-weight: 800; color: #999; font-size: 0.8rem; text-transform: uppercase; padding-bottom: 5px; }
@@ -142,11 +141,21 @@
             .save-image-btn { width: auto; padding: 18px 40px; }
         }
 
-        /* CLASSE PARA FORÇAR O MODO DESKTOP NA HORA DE SALVAR */
+        /* CLASSE PARA FORÇAR O MODO DESKTOP NA HORA DE SALVAR (CORRIGIDO) */
         .printing-mode {
+            position: absolute !important; /* Retira do fluxo normal */
+            top: 0 !important;
+            left: 0 !important;
+            margin: 0 !important;
+            transform: none !important;
+            z-index: 9999;
+            background: #f4f4f4; /* Fundo sólido para não ficar transparente */
+            
             width: 1100px !important;
             max-width: none !important;
+            min-height: 100vh;
         }
+
         .printing-mode .grid {
             display: grid !important;
             grid-template-columns: repeat(7, 1fr) !important;
@@ -215,8 +224,6 @@
         const first = new Date(y, m, 1).getDay();
         const last = new Date(y, m + 1, 0).getDate();
         
-        // Em mobile (flex), esses blocos vazios não atrapalham pois ficam na ordem, 
-        // mas no print (grid) eles empurram para o dia certo da semana.
         for(let i=0; i<first; i++) grid.innerHTML += `<div class="day-card" style="opacity:0"></div>`;
 
         for(let d=1; d<=last; d++) {
@@ -250,32 +257,47 @@
         const btns = document.querySelector('.export-buttons');
         const pickers = document.querySelectorAll('.picker-container');
         
-        // Esconde botões
+        // Guarda a posição do scroll
+        const originalScroll = window.scrollY;
+
+        // Esconde interface
         btns.style.display = 'none';
         pickers.forEach(p => p.style.opacity = '0');
+        if (window.getSelection) {window.getSelection().removeAllRanges();} // Tira seleção de texto
         
-        // ATIVA MODO DE IMPRESSÃO (Força layout desktop/grid)
+        // ATIVA MODO DE IMPRESSÃO
         container.classList.add('printing-mode');
 
-        // Pequeno delay para garantir que o CSS aplicou antes da foto
+        // Rola para o topo para garantir captura desde o início
+        window.scrollTo(0,0);
+
+        // Delay aumentado para 300ms para celulares mais lentos renderizarem
         setTimeout(() => {
             html2canvas(container, { 
                 scale: 2, 
                 useCORS: true,
                 backgroundColor: "#f4f4f4",
-                width: 1100 
+                width: 1100,      // Largura interna do elemento
+                windowWidth: 1400, // <--- O SEGREDO: Simula uma tela de 1400px de largura
+                x: 0,             // Força o início da captura no pixel 0
+                y: 0,             // Força o início da captura no pixel 0
+                scrollX: 0,       // Ignora rolagem horizontal
+                scrollY: 0        // Ignora rolagem vertical
             }).then(canvas => {
-                // Desativa modo de print e volta ao normal (mobile column)
+                // Desativa modo de print e restaura
                 container.classList.remove('printing-mode');
                 btns.style.display = 'block';
                 pickers.forEach(p => p.style.opacity = '');
+                
+                // Devolve o usuário para onde estava na tela
+                window.scrollTo(0, originalScroll);
                 
                 const link = document.createElement('a');
                 link.download = `Agenda_Prof_Leo_${months[dt.getMonth()]}.png`;
                 link.href = canvas.toDataURL();
                 link.click();
             });
-        }, 100);
+        }, 300);
     }
 
     draw();
