@@ -95,7 +95,7 @@
 
         /* CORREÇÃO DO ESPAÇO EM BRANCO NO MOBILE */
         .empty-day {
-            display: none; /* No celular, eles somem para não ocupar espaço */
+            display: none; 
             background: transparent !important;
             border: none !important;
             box-shadow: none !important;
@@ -168,7 +168,6 @@
             .export-buttons { width: auto; left: auto; right: 30px; transform: none; }
             .save-image-btn { width: auto; padding: 18px 40px; }
 
-            /* No desktop, os dias vazios precisam aparecer (invisíveis) para alinhar a grade */
             .empty-day { display: block; visibility: hidden; }
         }
 
@@ -185,7 +184,6 @@
         .printing-mode .candidate-info { flex-direction: row !important; gap: 25px !important; }
         .printing-mode .photo-slot { width: 180px !important; height: 180px !important; margin-top: 40px !important; }
         .printing-mode .name-box h1 { font-size: 2.5rem !important; }
-        /* No modo impressão, os dias vazios precisam existir para alinhar a grade */
         .printing-mode .empty-day { display: block !important; visibility: hidden; }
     </style>
 </head>
@@ -230,6 +228,7 @@
     let dt = new Date(2026, 1, 1);
     let globalData = {}; 
     let saveTimeout = null;
+    let statusHideTimer = null; // Variável nova para controlar o sumiço da mensagem
 
     const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
     const days = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
@@ -274,7 +273,6 @@
         const first = new Date(y, m, 1).getDay();
         const last = new Date(y, m + 1, 0).getDate();
         
-        // CORREÇÃO: Usamos a classe 'empty-day' para controlar a visibilidade
         for(let i=0; i<first; i++) grid.innerHTML += `<div class="day-card empty-day"></div>`;
 
         for(let d=1; d<=last; d++) {
@@ -339,6 +337,9 @@
             text: textArea.innerText
         };
 
+        // Cancela qualquer agendamento de esconder a mensagem anterior
+        if (statusHideTimer) clearTimeout(statusHideTimer);
+        
         clearTimeout(saveTimeout);
         statusDiv.style.display = 'block';
         statusDiv.innerText = "✍️ Digitando...";
@@ -349,7 +350,12 @@
     }
 
     async function saveToCloud(id, d, m, y, color, text) {
+        // Cancela qualquer agendamento de esconder anterior para não sumir no meio
+        if (statusHideTimer) clearTimeout(statusHideTimer);
+
+        statusDiv.style.display = 'block';
         statusDiv.innerText = "☁️ Salvando...";
+        
         const dateLabel = `${d}/${m+1}/${y}`;
         const url = `${API_URL}?action=save&id=${id}&dateLabel=${dateLabel}&color=${encodeURIComponent(color)}&text=${encodeURIComponent(text)}`;
 
@@ -362,7 +368,10 @@
             console.error(error);
             statusDiv.innerText = "✅ Salvo!"; 
         } finally {
-            setTimeout(() => statusDiv.style.display = 'none', 2000);
+            // Agora sim, agenda o sumiço da mensagem
+            statusHideTimer = setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 2000);
         }
     }
 
