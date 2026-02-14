@@ -141,9 +141,9 @@
             .save-image-btn { width: auto; padding: 18px 40px; }
         }
 
-        /* CLASSE PARA FORÇAR O MODO DESKTOP NA HORA DE SALVAR (CORRIGIDO) */
+        /* CLASSE PARA FORÇAR O MODO DESKTOP NA HORA DE SALVAR (CORRIGIDO 2.0) */
         .printing-mode {
-            position: absolute !important; /* Retira do fluxo normal */
+            position: absolute !important;
             top: 0 !important;
             left: 0 !important;
             margin: 0 !important;
@@ -153,7 +153,15 @@
             
             width: 1100px !important;
             max-width: none !important;
-            min-height: 100vh;
+            
+            /* CORREÇÃO: Removemos a altura forçada para cortar o espaço branco */
+            height: auto !important;
+            min-height: 0 !important;
+
+            /* Remove sombras e bordas redondas para a imagem ficar "limpa" */
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            border: none !important;
         }
 
         .printing-mode .grid {
@@ -253,7 +261,6 @@
 
     function saveAsImage() {
         const container = document.getElementById('agendaContainer');
-        const grid = document.getElementById('calendar');
         const btns = document.querySelector('.export-buttons');
         const pickers = document.querySelectorAll('.picker-container');
         
@@ -263,33 +270,31 @@
         // Esconde interface
         btns.style.display = 'none';
         pickers.forEach(p => p.style.opacity = '0');
-        if (window.getSelection) {window.getSelection().removeAllRanges();} // Tira seleção de texto
+        if (window.getSelection) {window.getSelection().removeAllRanges();} 
         
         // ATIVA MODO DE IMPRESSÃO
         container.classList.add('printing-mode');
 
-        // Rola para o topo para garantir captura desde o início
+        // Rola para o topo 
         window.scrollTo(0,0);
 
-        // Delay aumentado para 300ms para celulares mais lentos renderizarem
         setTimeout(() => {
             html2canvas(container, { 
                 scale: 2, 
                 useCORS: true,
                 backgroundColor: "#f4f4f4",
-                width: 1100,      // Largura interna do elemento
-                windowWidth: 1400, // <--- O SEGREDO: Simula uma tela de 1400px de largura
-                x: 0,             // Força o início da captura no pixel 0
-                y: 0,             // Força o início da captura no pixel 0
-                scrollX: 0,       // Ignora rolagem horizontal
-                scrollY: 0        // Ignora rolagem vertical
+                width: 1100,      
+                windowWidth: 1400, 
+                x: 0,             
+                y: 0,             
+                scrollX: 0,       
+                scrollY: 0        
             }).then(canvas => {
-                // Desativa modo de print e restaura
+                // Desativa modo de print
                 container.classList.remove('printing-mode');
                 btns.style.display = 'block';
                 pickers.forEach(p => p.style.opacity = '');
                 
-                // Devolve o usuário para onde estava na tela
                 window.scrollTo(0, originalScroll);
                 
                 const link = document.createElement('a');
