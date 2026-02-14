@@ -91,9 +91,10 @@
             transition: all 0.2s ease;
             box-shadow: 0 6px 18px rgba(0,0,0,0.05);
             padding: 12px;
+            /* Garante que o card não exceda a largura da grade */
+            min-width: 0; 
         }
 
-        /* CORREÇÃO DO ESPAÇO EM BRANCO NO MOBILE */
         .empty-day {
             display: none; 
             background: transparent !important;
@@ -128,10 +129,13 @@
         }
         .reset-btn:hover { background: #ffebeb; }
 
+        /* CORREÇÃO AQUI: Força a quebra de palavras longas */
         .editable-area {
             flex-grow: 1; padding: 5px; font-size: 0.95rem; 
             color: #444; outline: none; min-height: 60px; margin-top: 8px;
-            white-space: pre-wrap; 
+            white-space: pre-wrap;       /* Mantém quebras de linha (enter) */
+            word-break: break-word;      /* Quebra palavras longas */
+            overflow-wrap: break-word;   /* Compatibilidade extra */
         }
 
         .export-buttons {
@@ -228,7 +232,7 @@
     let dt = new Date(2026, 1, 1);
     let globalData = {}; 
     let saveTimeout = null;
-    let statusHideTimer = null; // Variável nova para controlar o sumiço da mensagem
+    let statusHideTimer = null; 
 
     const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
     const days = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
@@ -337,7 +341,6 @@
             text: textArea.innerText
         };
 
-        // Cancela qualquer agendamento de esconder a mensagem anterior
         if (statusHideTimer) clearTimeout(statusHideTimer);
         
         clearTimeout(saveTimeout);
@@ -350,7 +353,6 @@
     }
 
     async function saveToCloud(id, d, m, y, color, text) {
-        // Cancela qualquer agendamento de esconder anterior para não sumir no meio
         if (statusHideTimer) clearTimeout(statusHideTimer);
 
         statusDiv.style.display = 'block';
@@ -368,7 +370,6 @@
             console.error(error);
             statusDiv.innerText = "✅ Salvo!"; 
         } finally {
-            // Agora sim, agenda o sumiço da mensagem
             statusHideTimer = setTimeout(() => {
                 statusDiv.style.display = 'none';
             }, 2000);
