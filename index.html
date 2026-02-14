@@ -36,7 +36,7 @@
             flex-direction: column;
         }
 
-        /* HEADER MOBILE (Centralizado) */
+        /* HEADER MOBILE */
         .header {
             background: linear-gradient(135deg, var(--primary-red), var(--dark-red));
             padding: 25px 15px;
@@ -69,7 +69,7 @@
         .nav h2 { margin: 0; font-size: 1.1rem; color: var(--dark-red); font-weight: 800; }
         .nav button { background: white; border: 1px solid #ddd; padding: 10px 16px; border-radius: 14px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
 
-        /* GRID MOBILE (Flex Column - Uma coluna) */
+        /* GRID MOBILE */
         .grid { 
             display: flex; 
             flex-direction: column; 
@@ -124,6 +124,32 @@
             font-weight: 900; box-shadow: 0 8px 20px rgba(0, 123, 255, 0.3);
         }
 
+        /* TELA DE LOADING */
+        #loadingOverlay {
+            display: none; /* Começa invisível */
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: white;
+            z-index: 10000; /* Fica acima de TUDO, inclusive do printing-mode */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .spinner {
+            width: 50px; height: 50px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid var(--primary-red);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loading-text {
+            font-size: 1.5rem; font-weight: 800; color: var(--dark-red);
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+
         /* MODO DESKTOP */
         @media (min-width: 768px) {
             body { padding: 40px 20px; }
@@ -141,7 +167,7 @@
             .save-image-btn { width: auto; padding: 18px 40px; }
         }
 
-        /* CLASSE PARA FORÇAR O MODO DESKTOP NA HORA DE SALVAR (CORRIGIDO 2.0) */
+        /* CLASSE PARA FORÇAR O MODO DESKTOP NA HORA DE SALVAR */
         .printing-mode {
             position: absolute !important;
             top: 0 !important;
@@ -149,16 +175,15 @@
             margin: 0 !important;
             transform: none !important;
             z-index: 9999;
-            background: #f4f4f4; /* Fundo sólido para não ficar transparente */
+            background: #f4f4f4;
             
             width: 1100px !important;
             max-width: none !important;
             
-            /* CORREÇÃO: Removemos a altura forçada para cortar o espaço branco */
+            /* Remove altura forçada para cortar espaço branco */
             height: auto !important;
             min-height: 0 !important;
 
-            /* Remove sombras e bordas redondas para a imagem ficar "limpa" */
             border-radius: 0 !important;
             box-shadow: none !important;
             border: none !important;
@@ -179,6 +204,12 @@
     </style>
 </head>
 <body>
+
+<div id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="loading-text">Gerando Imagem...</div>
+    <div style="margin-top: 10px; color: #666;">Aguarde um momento</div>
+</div>
 
 <div class="container" id="agendaContainer">
     <header class="header">
@@ -263,46 +294,59 @@
         const container = document.getElementById('agendaContainer');
         const btns = document.querySelector('.export-buttons');
         const pickers = document.querySelectorAll('.picker-container');
+        const loading = document.getElementById('loadingOverlay');
         
-        // Guarda a posição do scroll
-        const originalScroll = window.scrollY;
+        // 1. MOSTRA TELA DE CARREGAMENTO
+        loading.style.display = 'flex';
 
-        // Esconde interface
-        btns.style.display = 'none';
-        pickers.forEach(p => p.style.opacity = '0');
-        if (window.getSelection) {window.getSelection().removeAllRanges();} 
-        
-        // ATIVA MODO DE IMPRESSÃO
-        container.classList.add('printing-mode');
-
-        // Rola para o topo 
-        window.scrollTo(0,0);
-
+        // Pequeno delay para o navegador renderizar o loading antes de travar no processo
         setTimeout(() => {
-            html2canvas(container, { 
-                scale: 2, 
-                useCORS: true,
-                backgroundColor: "#f4f4f4",
-                width: 1100,      
-                windowWidth: 1400, 
-                x: 0,             
-                y: 0,             
-                scrollX: 0,       
-                scrollY: 0        
-            }).then(canvas => {
-                // Desativa modo de print
-                container.classList.remove('printing-mode');
-                btns.style.display = 'block';
-                pickers.forEach(p => p.style.opacity = '');
-                
-                window.scrollTo(0, originalScroll);
-                
-                const link = document.createElement('a');
-                link.download = `Agenda_Prof_Leo_${months[dt.getMonth()]}.png`;
-                link.href = canvas.toDataURL();
-                link.click();
-            });
-        }, 300);
+            
+            // Guarda scroll original
+            const originalScroll = window.scrollY;
+
+            // Esconde UI indesejada
+            btns.style.display = 'none';
+            pickers.forEach(p => p.style.opacity = '0');
+            if (window.getSelection) {window.getSelection().removeAllRanges();} 
+            
+            // ATIVA MODO DE IMPRESSÃO (O usuário não vê isso acontecer por causa do loadingOverlay)
+            container.classList.add('printing-mode');
+
+            // Rola para o topo 
+            window.scrollTo(0,0);
+
+            // Delay secundário para garantir que o layout se ajustou
+            setTimeout(() => {
+                html2canvas(container, { 
+                    scale: 2, 
+                    useCORS: true,
+                    backgroundColor: "#f4f4f4",
+                    width: 1100,      
+                    windowWidth: 1400, 
+                    x: 0,             
+                    y: 0,             
+                    scrollX: 0,       
+                    scrollY: 0        
+                }).then(canvas => {
+                    // Limpeza
+                    container.classList.remove('printing-mode');
+                    btns.style.display = 'block';
+                    pickers.forEach(p => p.style.opacity = '');
+                    window.scrollTo(0, originalScroll);
+                    
+                    // 2. ESCONDE TELA DE CARREGAMENTO
+                    loading.style.display = 'none';
+                    
+                    // Download
+                    const link = document.createElement('a');
+                    link.download = `Agenda_Prof_Leo_${months[dt.getMonth()]}.png`;
+                    link.href = canvas.toDataURL();
+                    link.click();
+                });
+            }, 300); // Tempo para o layout 'printing-mode' se acomodar
+            
+        }, 50); // Tempo para o 'loadingOverlay' aparecer
     }
 
     draw();
