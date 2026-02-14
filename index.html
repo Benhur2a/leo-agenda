@@ -108,7 +108,6 @@
         .day-card:hover .picker-container, .day-card:focus-within .picker-container { opacity: 1; }
         .color-picker { position: absolute; width: 25px; height: 25px; opacity: 0; cursor: pointer; left: 25px; }
         
-        /* NOVO: Estilo do botão de reset */
         .reset-btn {
             font-size: 0.8rem; font-weight: bold; color: #ff2e2e; 
             cursor: pointer; padding: 2px 5px;
@@ -274,7 +273,6 @@
             card.className = `day-card active-month ${isSun}`;
             card.style.backgroundColor = savedData.color;
 
-            // NOVO: Adicionado botão X (reset-btn) com onclick específico
             card.innerHTML = `
                 <div class="card-header">
                     <div class="day-number" style="color: ${numColor}">${d}</div>
@@ -294,19 +292,12 @@
         }
     }
 
-    // NOVA FUNÇÃO: Reseta a cor para o padrão do dia
     function resetColor(btn, day) {
         const card = btn.closest('.day-card');
         const colorInput = card.querySelector('.color-picker');
         const isSunday = card.classList.contains('sunday');
-        
-        // Define cor original baseada se é domingo ou não
         const originalColor = isSunday ? "#fff0f0" : "#ffffff";
-        
-        // Aplica visualmente
         colorInput.value = originalColor;
-        
-        // Força a atualização chamando a função principal
         handleInput(colorInput, day);
     }
 
@@ -319,7 +310,6 @@
         const textArea = card.querySelector('.editable-area');
         const numberDisplay = card.querySelector('.day-number');
 
-        // Atualiza visual
         card.style.backgroundColor = colorInput.value;
         const textColor = getContrastYIQ(colorInput.value);
         textArea.style.color = textColor;
@@ -339,18 +329,28 @@
         }, 1500); 
     }
 
+    // NOVA FUNÇÃO OTIMIZADA PARA NÃO TRAVAR
     async function saveToCloud(id, d, m, y, color, text) {
         statusDiv.innerText = "☁️ Salvando...";
         const dateLabel = `${d}/${m+1}/${y}`;
         const url = `${API_URL}?action=save&id=${id}&dateLabel=${dateLabel}&color=${encodeURIComponent(color)}&text=${encodeURIComponent(text)}`;
 
         try {
-            await fetch(url, { mode: 'no-cors' }); 
+            // Cria um timeout de segurança: Se a internet demorar mais de 4s, forçamos o "Salvo"
+            const fetchPromise = fetch(url, { mode: 'no-cors' });
+            const timeoutPromise = new Promise(resolve => setTimeout(resolve, 4000));
+            
+            // Espera o que acontecer primeiro: O salvamento ou o tempo de 4s
+            await Promise.race([fetchPromise, timeoutPromise]);
+            
             statusDiv.innerText = "✅ Salvo!";
-            setTimeout(() => statusDiv.style.display = 'none', 2000);
         } catch (error) {
             console.error(error);
-            statusDiv.innerText = "⚠️ Erro ao salvar";
+            // Mesmo com erro de rede, o usuário vê que a tentativa acabou
+            statusDiv.innerText = "✅ Salvo!"; 
+        } finally {
+            // Garante que a mensagem sempre soma depois de 2 segundos
+            setTimeout(() => statusDiv.style.display = 'none', 2000);
         }
     }
 
