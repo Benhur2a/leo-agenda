@@ -90,8 +90,9 @@
             padding: 12px;
         }
 
-        .sunday { background: #fff0f0 !important; }
-        .sunday .day-number { color: #ff0000 !important; }
+        /* CORREÇÃO AQUI: Removemos o !important para permitir edição */
+        .sunday { background: #fff0f0; }
+        .sunday .day-number { color: #ff0000; }
 
         .card-header {
             display: flex; justify-content: space-between;
@@ -217,11 +218,11 @@
 <script>
     // --- CONFIGURAÇÃO ---
     // COLE ABAIXO A URL DO SEU SCRIPT GOOGLE (Entre as aspas)
-    const API_URL = "https://script.google.com/macros/s/AKfycbxtUYtxDgIZimacziZmUO95_Ta5b6VoqPAm3aPDIUm4Eg4WexN_u-I6UJUHnS0wfNphPA/exec"; 
+    const API_URL = "COLE_SUA_URL_AQUI"; 
 
     let dt = new Date(2026, 1, 1);
     let globalData = {}; // Armazena os dados vindos da planilha
-    let saveTimeout = null; // Para o debounce (evitar salvar a cada letra)
+    let saveTimeout = null; // Para o debounce
 
     const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
     const days = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
@@ -240,12 +241,11 @@
         try {
             const response = await fetch(API_URL + "?action=read");
             const data = await response.json();
-            globalData = data; // Guarda na memória
+            globalData = data; 
             statusDiv.style.display = 'none';
         } catch (error) {
             console.error(error);
             statusDiv.innerText = "❌ Erro de conexão";
-            // Mesmo com erro, desenha a agenda vazia
         }
         
         draw();
@@ -275,9 +275,12 @@
             const cardDate = new Date(y, m, d);
             const isSun = cardDate.getDay() === 0 ? 'sunday' : '';
             
-            // Pega dados da memória global (vinda da planilha)
+            // CORREÇÃO: Define a cor padrão baseada no dia (se for domingo, usa vermelho claro)
+            const defaultColor = (cardDate.getDay() === 0) ? "#fff0f0" : "#ffffff";
+            
             const id = `agenda_${y}_${m}_${d}`;
-            const savedData = globalData[id] || { text: "", color: "#ffffff" };
+            // Se não tiver dado salvo, usa a cor padrão do dia
+            const savedData = globalData[id] || { text: "", color: defaultColor };
             
             const textColor = getContrastYIQ(savedData.color);
             const numColor = textColor === 'white' ? 'rgba(255,255,255,0.6)' : '';
@@ -304,7 +307,7 @@
         }
     }
 
-    // 2. SALVAR DADOS (Com Debounce para não travar)
+    // 2. SALVAR DADOS
     function handleInput(element, day) {
         const card = element.closest('.day-card');
         const m = dt.getMonth(), y = dt.getFullYear();
@@ -314,7 +317,6 @@
         const textArea = card.querySelector('.editable-area');
         const numberDisplay = card.querySelector('.day-number');
 
-        // Atualiza visual imediatamente
         if (element === colorInput) {
             card.style.backgroundColor = colorInput.value;
             const textColor = getContrastYIQ(colorInput.value);
@@ -322,35 +324,26 @@
             numberDisplay.style.color = (textColor === 'white') ? 'rgba(255,255,255,0.6)' : '';
         }
 
-        // Atualiza memória local
         globalData[id] = {
             color: colorInput.value,
             text: textArea.innerText
         };
 
-        // Agenda o envio para a nuvem (espera parar de digitar)
         clearTimeout(saveTimeout);
         statusDiv.style.display = 'block';
         statusDiv.innerText = "✍️ Digitando...";
 
         saveTimeout = setTimeout(() => {
             saveToCloud(id, day, m, y, colorInput.value, textArea.innerText);
-        }, 1500); // Espera 1.5 segundos após a última letra
+        }, 1500); 
     }
 
     async function saveToCloud(id, d, m, y, color, text) {
         statusDiv.innerText = "☁️ Salvando...";
-        
-        // Formata data bonita para a planilha
         const dateLabel = `${d}/${m+1}/${y}`;
-        
-        // Monta a URL de salvamento
-        // Usamos encodeURIComponent para permitir caracteres especiais e espaços
         const url = `${API_URL}?action=save&id=${id}&dateLabel=${dateLabel}&color=${encodeURIComponent(color)}&text=${encodeURIComponent(text)}`;
 
         try {
-            // mode: 'no-cors' é necessário para Apps Script simples, 
-            // ele envia o dado mas não espera resposta JSON detalhada para evitar bloqueio de segurança
             await fetch(url, { mode: 'no-cors' }); 
             statusDiv.innerText = "✅ Salvo!";
             setTimeout(() => statusDiv.style.display = 'none', 2000);
@@ -393,7 +386,6 @@
         }, 300);
     }
 
-    // Inicia o app
     init();
 </script>
 
