@@ -90,7 +90,6 @@
             padding: 12px;
         }
 
-        /* CORREÇÃO AQUI: Removemos o !important para permitir edição */
         .sunday { background: #fff0f0; }
         .sunday .day-number { color: #ff0000; }
 
@@ -104,10 +103,18 @@
 
         .picker-container {
             position: relative; opacity: 0; transition: opacity 0.2s;
-            display: flex; align-items: center; font-size: 1.1rem;
+            display: flex; align-items: center; font-size: 1.1rem; gap: 8px;
         }
         .day-card:hover .picker-container, .day-card:focus-within .picker-container { opacity: 1; }
-        .color-picker { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        .color-picker { position: absolute; width: 25px; height: 25px; opacity: 0; cursor: pointer; left: 25px; }
+        
+        /* NOVO: Estilo do botão de reset */
+        .reset-btn {
+            font-size: 0.8rem; font-weight: bold; color: #ff2e2e; 
+            cursor: pointer; padding: 2px 5px;
+            border-radius: 4px; background: rgba(255,255,255,0.5);
+        }
+        .reset-btn:hover { background: #ffebeb; }
 
         .editable-area {
             flex-grow: 1; padding: 5px; font-size: 0.95rem; 
@@ -126,7 +133,6 @@
             font-weight: 900; box-shadow: 0 8px 20px rgba(0, 123, 255, 0.3);
         }
 
-        /* Loading Indicator */
         #syncStatus {
             position: fixed; top: 10px; right: 10px; 
             background: rgba(0,0,0,0.7); color: white; 
@@ -152,34 +158,18 @@
         }
 
         .printing-mode {
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
-            margin: 0 !important;
-            transform: none !important;
-            z-index: 9999;
-            background: #f4f4f4;
-            width: 1100px !important;
-            max-width: none !important;
-            height: auto !important;
-            min-height: 0 !important;
-            border-radius: 0 !important;
-            box-shadow: none !important;
-            border: none !important;
+            position: absolute !important; top: 0 !important; left: 0 !important;
+            margin: 0 !important; transform: none !important; z-index: 9999;
+            background: #f4f4f4; width: 1100px !important; max-width: none !important;
+            height: auto !important; min-height: 0 !important;
+            border-radius: 0 !important; box-shadow: none !important; border: none !important;
         }
-
-        .printing-mode .grid {
-            display: grid !important;
-            grid-template-columns: repeat(7, 1fr) !important;
-            gap: 15px !important;
-            padding: 0 50px 50px !important;
-        }
+        .printing-mode .grid { display: grid !important; grid-template-columns: repeat(7, 1fr) !important; gap: 15px !important; padding: 0 50px 50px !important; }
         .printing-mode .day-label { display: block !important; text-align: center; font-weight: 800; color: #999; font-size: 0.8rem; }
         .printing-mode .header { flex-direction: row !important; text-align: left !important; padding: 30px 50px !important; justify-content: space-between !important; }
         .printing-mode .candidate-info { flex-direction: row !important; gap: 25px !important; }
         .printing-mode .photo-slot { width: 180px !important; height: 180px !important; margin-top: 40px !important; }
         .printing-mode .name-box h1 { font-size: 2.5rem !important; }
-
     </style>
 </head>
 <body>
@@ -221,14 +211,13 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbxtUYtxDgIZimacziZmUO95_Ta5b6VoqPAm3aPDIUm4Eg4WexN_u-I6UJUHnS0wfNphPA/exec"; 
 
     let dt = new Date(2026, 1, 1);
-    let globalData = {}; // Armazena os dados vindos da planilha
-    let saveTimeout = null; // Para o debounce
+    let globalData = {}; 
+    let saveTimeout = null;
 
     const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
     const days = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
     const statusDiv = document.getElementById('syncStatus');
 
-    // 1. CARREGAR DADOS DA NUVEM AO INICIAR
     async function init() {
         if(API_URL === "COLE_SUA_URL_AQUI") {
             alert("Você precisa colar o link do Google Script no código!");
@@ -247,7 +236,6 @@
             console.error(error);
             statusDiv.innerText = "❌ Erro de conexão";
         }
-        
         draw();
     }
 
@@ -274,12 +262,9 @@
         for(let d=1; d<=last; d++) {
             const cardDate = new Date(y, m, d);
             const isSun = cardDate.getDay() === 0 ? 'sunday' : '';
-            
-            // CORREÇÃO: Define a cor padrão baseada no dia (se for domingo, usa vermelho claro)
             const defaultColor = (cardDate.getDay() === 0) ? "#fff0f0" : "#ffffff";
             
             const id = `agenda_${y}_${m}_${d}`;
-            // Se não tiver dado salvo, usa a cor padrão do dia
             const savedData = globalData[id] || { text: "", color: defaultColor };
             
             const textColor = getContrastYIQ(savedData.color);
@@ -289,10 +274,12 @@
             card.className = `day-card active-month ${isSun}`;
             card.style.backgroundColor = savedData.color;
 
+            // NOVO: Adicionado botão X (reset-btn) com onclick específico
             card.innerHTML = `
                 <div class="card-header">
                     <div class="day-number" style="color: ${numColor}">${d}</div>
                     <div class="picker-container">
+                        <span class="reset-btn" onclick="resetColor(this, ${d})" title="Cor Original">✖</span>
                         🎨
                         <input type="color" class="color-picker" 
                                value="${savedData.color}" 
@@ -307,7 +294,22 @@
         }
     }
 
-    // 2. SALVAR DADOS
+    // NOVA FUNÇÃO: Reseta a cor para o padrão do dia
+    function resetColor(btn, day) {
+        const card = btn.closest('.day-card');
+        const colorInput = card.querySelector('.color-picker');
+        const isSunday = card.classList.contains('sunday');
+        
+        // Define cor original baseada se é domingo ou não
+        const originalColor = isSunday ? "#fff0f0" : "#ffffff";
+        
+        // Aplica visualmente
+        colorInput.value = originalColor;
+        
+        // Força a atualização chamando a função principal
+        handleInput(colorInput, day);
+    }
+
     function handleInput(element, day) {
         const card = element.closest('.day-card');
         const m = dt.getMonth(), y = dt.getFullYear();
@@ -317,12 +319,11 @@
         const textArea = card.querySelector('.editable-area');
         const numberDisplay = card.querySelector('.day-number');
 
-        if (element === colorInput) {
-            card.style.backgroundColor = colorInput.value;
-            const textColor = getContrastYIQ(colorInput.value);
-            textArea.style.color = textColor;
-            numberDisplay.style.color = (textColor === 'white') ? 'rgba(255,255,255,0.6)' : '';
-        }
+        // Atualiza visual
+        card.style.backgroundColor = colorInput.value;
+        const textColor = getContrastYIQ(colorInput.value);
+        textArea.style.color = textColor;
+        numberDisplay.style.color = (textColor === 'white') ? 'rgba(255,255,255,0.6)' : '';
 
         globalData[id] = {
             color: colorInput.value,
@@ -391,4 +392,3 @@
 
 </body>
 </html>
-
