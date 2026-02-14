@@ -66,7 +66,6 @@
             padding: 15px; display: flex; justify-content: space-between;
             align-items: center; background: rgba(255,255,255,0.4);
         }
-        /* CORREÇÃO AQUI: Adicionado flex:1 e text-align: center */
         .nav h2 { 
             margin: 0; font-size: 1.1rem; color: var(--dark-red); font-weight: 800; 
             flex: 1; text-align: center; 
@@ -92,6 +91,16 @@
             transition: all 0.2s ease;
             box-shadow: 0 6px 18px rgba(0,0,0,0.05);
             padding: 12px;
+        }
+
+        /* CORREÇÃO DO ESPAÇO EM BRANCO NO MOBILE */
+        .empty-day {
+            display: none; /* No celular, eles somem para não ocupar espaço */
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            min-height: 0 !important;
+            padding: 0 !important;
         }
 
         .sunday { background: #fff0f0; }
@@ -158,6 +167,9 @@
             .day-label { display: block; text-align: center; font-weight: 800; color: #999; font-size: 0.8rem; text-transform: uppercase; padding-bottom: 5px; }
             .export-buttons { width: auto; left: auto; right: 30px; transform: none; }
             .save-image-btn { width: auto; padding: 18px 40px; }
+
+            /* No desktop, os dias vazios precisam aparecer (invisíveis) para alinhar a grade */
+            .empty-day { display: block; visibility: hidden; }
         }
 
         .printing-mode {
@@ -173,6 +185,8 @@
         .printing-mode .candidate-info { flex-direction: row !important; gap: 25px !important; }
         .printing-mode .photo-slot { width: 180px !important; height: 180px !important; margin-top: 40px !important; }
         .printing-mode .name-box h1 { font-size: 2.5rem !important; }
+        /* No modo impressão, os dias vazios precisam existir para alinhar a grade */
+        .printing-mode .empty-day { display: block !important; visibility: hidden; }
     </style>
 </head>
 <body>
@@ -260,7 +274,8 @@
         const first = new Date(y, m, 1).getDay();
         const last = new Date(y, m + 1, 0).getDate();
         
-        for(let i=0; i<first; i++) grid.innerHTML += `<div class="day-card" style="opacity:0"></div>`;
+        // CORREÇÃO: Usamos a classe 'empty-day' para controlar a visibilidade
+        for(let i=0; i<first; i++) grid.innerHTML += `<div class="day-card empty-day"></div>`;
 
         for(let d=1; d<=last; d++) {
             const cardDate = new Date(y, m, d);
