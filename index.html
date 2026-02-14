@@ -130,7 +130,7 @@
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: white;
-            z-index: 10000; /* Fica acima de TUDO, inclusive do printing-mode */
+            z-index: 10000; /* Fica acima de TUDO */
             flex-direction: column;
             justify-content: center;
             align-items: center;
@@ -180,7 +180,7 @@
             width: 1100px !important;
             max-width: none !important;
             
-            /* Remove altura forçada para cortar espaço branco */
+            /* Altura automática */
             height: auto !important;
             min-height: 0 !important;
 
@@ -299,24 +299,18 @@
         // 1. MOSTRA TELA DE CARREGAMENTO
         loading.style.display = 'flex';
 
-        // Pequeno delay para o navegador renderizar o loading antes de travar no processo
         setTimeout(() => {
-            
-            // Guarda scroll original
             const originalScroll = window.scrollY;
 
-            // Esconde UI indesejada
             btns.style.display = 'none';
             pickers.forEach(p => p.style.opacity = '0');
             if (window.getSelection) {window.getSelection().removeAllRanges();} 
             
-            // ATIVA MODO DE IMPRESSÃO (O usuário não vê isso acontecer por causa do loadingOverlay)
+            // ATIVA MODO DE IMPRESSÃO
             container.classList.add('printing-mode');
-
-            // Rola para o topo 
             window.scrollTo(0,0);
 
-            // Delay secundário para garantir que o layout se ajustou
+            // Pequeno delay técnico para renderizar o layout
             setTimeout(() => {
                 html2canvas(container, { 
                     scale: 2, 
@@ -329,24 +323,32 @@
                     scrollX: 0,       
                     scrollY: 0        
                 }).then(canvas => {
-                    // Limpeza
-                    container.classList.remove('printing-mode');
-                    btns.style.display = 'block';
-                    pickers.forEach(p => p.style.opacity = '');
-                    window.scrollTo(0, originalScroll);
                     
-                    // 2. ESCONDE TELA DE CARREGAMENTO
-                    loading.style.display = 'none';
+                    // --- AQUI ESTÁ A MUDANÇA ---
+                    // Força uma espera de 2 segundos (2000ms) antes de fechar o loading
+                    setTimeout(() => {
+                        
+                        // Limpeza
+                        container.classList.remove('printing-mode');
+                        btns.style.display = 'block';
+                        pickers.forEach(p => p.style.opacity = '');
+                        window.scrollTo(0, originalScroll);
+                        
+                        // 2. ESCONDE TELA DE CARREGAMENTO
+                        loading.style.display = 'none';
+                        
+                        // Download
+                        const link = document.createElement('a');
+                        link.download = `Agenda_Prof_Leo_${months[dt.getMonth()]}.png`;
+                        link.href = canvas.toDataURL();
+                        link.click();
+                        
+                    }, 2000); // 2 segundos de espera
                     
-                    // Download
-                    const link = document.createElement('a');
-                    link.download = `Agenda_Prof_Leo_${months[dt.getMonth()]}.png`;
-                    link.href = canvas.toDataURL();
-                    link.click();
                 });
-            }, 300); // Tempo para o layout 'printing-mode' se acomodar
+            }, 300); 
             
-        }, 50); // Tempo para o 'loadingOverlay' aparecer
+        }, 50); 
     }
 
     draw();
