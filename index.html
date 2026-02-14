@@ -66,7 +66,11 @@
             padding: 15px; display: flex; justify-content: space-between;
             align-items: center; background: rgba(255,255,255,0.4);
         }
-        .nav h2 { margin: 0; font-size: 1.1rem; color: var(--dark-red); font-weight: 800; }
+        /* CORREÇÃO AQUI: Adicionado flex:1 e text-align: center */
+        .nav h2 { 
+            margin: 0; font-size: 1.1rem; color: var(--dark-red); font-weight: 800; 
+            flex: 1; text-align: center; 
+        }
         .nav button { background: white; border: 1px solid #ddd; padding: 10px 16px; border-radius: 14px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
 
         /* GRID MOBILE */
@@ -329,27 +333,20 @@
         }, 1500); 
     }
 
-    // NOVA FUNÇÃO OTIMIZADA PARA NÃO TRAVAR
     async function saveToCloud(id, d, m, y, color, text) {
         statusDiv.innerText = "☁️ Salvando...";
         const dateLabel = `${d}/${m+1}/${y}`;
         const url = `${API_URL}?action=save&id=${id}&dateLabel=${dateLabel}&color=${encodeURIComponent(color)}&text=${encodeURIComponent(text)}`;
 
         try {
-            // Cria um timeout de segurança: Se a internet demorar mais de 4s, forçamos o "Salvo"
             const fetchPromise = fetch(url, { mode: 'no-cors' });
             const timeoutPromise = new Promise(resolve => setTimeout(resolve, 4000));
-            
-            // Espera o que acontecer primeiro: O salvamento ou o tempo de 4s
             await Promise.race([fetchPromise, timeoutPromise]);
-            
             statusDiv.innerText = "✅ Salvo!";
         } catch (error) {
             console.error(error);
-            // Mesmo com erro de rede, o usuário vê que a tentativa acabou
             statusDiv.innerText = "✅ Salvo!"; 
         } finally {
-            // Garante que a mensagem sempre soma depois de 2 segundos
             setTimeout(() => statusDiv.style.display = 'none', 2000);
         }
     }
