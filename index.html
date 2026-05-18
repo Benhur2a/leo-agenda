@@ -524,9 +524,13 @@
           <input type="time" id="fTime" placeholder="--:--">
         </div>
         <div class="field">
-          <label for="fLocation">Local</label>
-          <input type="text" id="fLocation" placeholder="Ex.: Câmara Municipal">
+          <label for="fCity">Município</label>
+          <input type="text" id="fCity" placeholder="Ex.: Porto Velho">
         </div>
+      </div>
+      <div class="field">
+        <label for="fLocation">Local</label>
+        <input type="text" id="fLocation" placeholder="Ex.: Câmara Municipal, Sala 2">
       </div>
       <div class="field">
         <label for="fTitle">Título do compromisso *</label>
@@ -592,7 +596,7 @@
       if (Array.isArray(parsed)) return parsed;
     } catch(e) {}
     return [{ id: uid(), time:"", title: raw.text.split('\n')[0].slice(0,80) || "Compromisso",
-              location:"", category:"outro", notes: raw.text }];
+              city:"", location:"", category:"outro", notes: raw.text }];
   }
   function getEvents(y,m,d) {
     const id = idOf(y,m,d);
@@ -691,9 +695,9 @@
           <div class="event-head-left">
             ${ev.time ? `<div class="event-time">${ev.time}</div>` : ''}
             <div class="event-title">${escapeHTML(ev.title)}</div>
-            ${ev.location ? `<div class="event-meta">
+            ${ev.city || ev.location ? `<div class="event-meta">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              ${escapeHTML(ev.location)}
+              ${[escapeHTML(ev.city), escapeHTML(ev.location)].filter(Boolean).join(' — ')}
             </div>` : ''}
             ${ev.notes ? `<div class="event-notes">${escapeHTML(ev.notes)}</div>` : ''}
           </div>
@@ -722,6 +726,7 @@
     editingEventId = null;
     $('editingId').value = '';
     $('fTime').value = '';
+    $('fCity').value = '';
     $('fLocation').value = '';
     $('fTitle').value = '';
     $('fNotes').value = '';
@@ -736,6 +741,7 @@
     editingEventId = id;
     $('editingId').value = id;
     $('fTime').value = ev.time || '';
+    $('fCity').value = ev.city || '';
     $('fLocation').value = ev.location || '';
     $('fTitle').value = ev.title || '';
     $('fNotes').value = ev.notes || '';
@@ -752,6 +758,7 @@
       id: editingEventId || uid(),
       time: $('fTime').value,
       title,
+      city: $('fCity').value.trim(),
       location: $('fLocation').value.trim(),
       category: selectedCategory,
       notes: $('fNotes').value.trim()
@@ -763,6 +770,7 @@
     setEvents(y,m,d, events);
     closePanel();
   }
+
   function deleteEvent(id) {
     if (!confirm('Excluir este compromisso?')) return;
     const {y,m,d} = currentDayKey;
@@ -792,7 +800,6 @@
   function changeMonth(delta) { dt.setMonth(dt.getMonth() + delta); drawCalendar(); }
   function goToday() { dt = new Date(); drawCalendar(); }
 
-  // Estilos por categoria para exportação (inline, sem glass)
   const EXPORT_CAT = {
     publico:  { border:'#c8102e', bg:'#fbeaea', text:'#7a0a1c' },
     reuniao:  { border:'#1f4e8c', bg:'#e8eff8', text:'#16365e' },
@@ -802,8 +809,6 @@
     outro:    { border:'#4a4640', bg:'#f0ece6', text:'#2a2620' }
   };
 
-  // Tenta converter a foto carregada na tela em base64 pra usar na exportação.
-  // Cobre o caso de CORS / canvas tainted retornando null se falhar.
   async function getPhotoDataURL() {
     const img = document.querySelector('.brand-photo');
     if (!img) return null;
@@ -818,13 +823,10 @@
       c.getContext('2d').drawImage(img, 0, 0);
       return c.toDataURL('image/png');
     } catch(e) {
-      // Canvas tainted — devolve o src original e deixa html2canvas tentar
       return img.src || null;
     }
   }
 
-  // Constrói um container LIMPO para exportação. Usa <table> com table-layout:fixed
-  // e estilos inline — evita bugs do html2canvas com CSS Grid moderno.
   function buildExportContainer(photoSrc) {
     const y = dt.getFullYear(), m = dt.getMonth();
     const firstWeekday = new Date(y, m, 1).getDay();
@@ -843,7 +845,6 @@
       color:#1a1411;
     `;
 
-    // Monta linhas da tabela
     let bodyHTML = '';
     let dc = 1;
     for (let i = 0; i < totalCells; i++) {
@@ -863,7 +864,6 @@
         const dayBg = isToday(dc) ? 'background:linear-gradient(180deg,rgba(200,16,46,.12) 0%,transparent 70%);' : '';
         const dayNumColor = isWeekend ? '#c8102e' : '#1a1411';
 
-        // Hoje: número branco em círculo vermelho
         let dayNumHTML;
         if (isToday(dc)) {
           dayNumHTML = `<div style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;background:linear-gradient(135deg,#c8102e,#7a0a1c);color:#fff;border-radius:50%;font-family:'Fraunces',serif;font-size:13px;font-weight:700;margin-bottom:6px;line-height:1;">${dc}</div>`;
@@ -875,7 +875,21 @@
         events.forEach(ev => {
           const cat = EXPORT_CAT[ev.category] || EXPORT_CAT.outro;
           const time = ev.time ? `<span style="font-weight:800;margin-right:5px;font-variant-numeric:tabular-nums;">${ev.time}</span>` : '';
-          evHTML += `<div style="font-size:10.5px;padding:4px 7px;margin-bottom:3px;border-left:3px solid ${cat.border};background:${cat.bg};color:${cat.text};border-radius:4px;font-weight:600;line-height:1.35;word-wrap:break-word;overflow-wrap:break-word;word-break:break-word;">${time}${escapeHTML(ev.title)}</div>`;
+          
+          // Adicionando apenas o Município na exportação
+          const locationHTML = ev.city ? `
+            <div style="font-size:9px; margin-top:3px; opacity:0.8; font-weight:500; display:flex; align-items:flex-start; gap:3px;">
+              <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:1px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span style="flex:1; min-width:0; line-height:1.2;">${escapeHTML(ev.city)}</span>
+            </div>
+          ` : '';
+
+          evHTML += `
+            <div style="font-size:10.5px;padding:5px 7px;margin-bottom:4px;border-left:3px solid ${cat.border};background:${cat.bg};color:${cat.text};border-radius:4px;font-weight:600;line-height:1.35;word-wrap:break-word;overflow-wrap:break-word;word-break:break-word;">
+              <div>${time}${escapeHTML(ev.title)}</div>
+              ${locationHTML}
+            </div>
+          `;
         });
 
         bodyHTML += `<td style="${borderRight}${borderBottom}${dayBg}height:140px;padding:8px 8px 6px;vertical-align:top;width:14.285%;">
@@ -933,7 +947,6 @@
     const wrapper = buildExportContainer(photoSrc);
     document.body.appendChild(wrapper);
 
-    // Pequena espera pra fonts/render finalizarem
     await new Promise(r => setTimeout(r, 300));
 
     try {
