@@ -733,9 +733,13 @@
       </div>
     </div>
     <div class="top-actions">
-      <button class="btn" onclick="exportImage()" title="Salvar mês como imagem">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        <span class="btn-text">Salvar imagem</span>
+      <button class="btn" onclick="exportImage('lista')" title="Salvar como lista de compromissos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        <span class="btn-text">Lista</span>
+      </button>
+      <button class="btn" onclick="exportImage('calendario')" title="Salvar como calendário do mês">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span class="btn-text">Calendário</span>
       </button>
     </div>
   </header>
@@ -1519,32 +1523,115 @@
     }
   }
 
-  // Divide os dias em N colunas contiguas com alturas o mais parecidas possivel.
-  function balancedSplit(heights, N) {
-    const n = heights.length;
-    if (N <= 1) return [heights.map((_, i) => i)];
-    const fits = cap => {
-      let parts = 1, cur = 0;
-      for (const h of heights) {
-        if (cur + h > cap) { parts++; cur = h; if (parts > N) return false; }
-        else cur += h;
+  function buildExportContainer(photoSrc) {
+    const y = dt.getFullYear(), m = dt.getMonth();
+    const firstWeekday = new Date(y, m, 1).getDay();
+    const lastDate = new Date(y, m+1, 0).getDate();
+    const totalCells = Math.ceil((firstWeekday + lastDate) / 7) * 7;
+    const today = new Date();
+    const isToday = d => today.getFullYear()===y && today.getMonth()===m && today.getDate()===d;
+
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = `
+      position:fixed;top:0;left:-10000px;
+      width:1280px;padding:32px;
+      background:linear-gradient(135deg,#faf2e6 0%,#f5e8d6 100%);
+      box-sizing:border-box;
+      font-family:'Manrope',system-ui,sans-serif;
+      color:#1a1411;
+    `;
+
+    let bodyHTML = '';
+    let dc = 1;
+    for (let i = 0; i < totalCells; i++) {
+      const isLastCol = (i + 1) % 7 === 0;
+      const isLastRow = i >= totalCells - 7;
+      const borderRight  = isLastCol ? '' : 'border-right:1px solid rgba(120,80,40,.08);';
+      const borderBottom = isLastRow ? '' : 'border-bottom:1px solid rgba(120,80,40,.08);';
+
+      if (i % 7 === 0) bodyHTML += '<tr>';
+
+      if (i < firstWeekday || dc > lastDate) {
+        bodyHTML += `<td style="${borderRight}${borderBottom}height:140px;background:rgba(120,80,40,.025);vertical-align:top;width:14.285%;"></td>`;
+      } else {
+        const events = getEvents(y, m, dc);
+        const wkd = new Date(y, m, dc).getDay();
+        const isWeekend = wkd === 0 || wkd === 6;
+        const dayBg = isToday(dc) ? 'background:linear-gradient(180deg,rgba(124,58,237,.12) 0%,transparent 70%);' : '';
+        const dayNumColor = isWeekend ? '#c8102e' : '#1a1411';
+
+        let dayNumHTML;
+        if (isToday(dc)) {
+          dayNumHTML = `<div style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;background:linear-gradient(135deg,#c8102e,#7a0a1c);color:#fff;border-radius:50%;font-family:'Fraunces',serif;font-size:13px;font-weight:700;margin-bottom:6px;line-height:1;">${dc}</div>`;
+        } else {
+          dayNumHTML = `<div style="font-family:'Fraunces',serif;font-size:15px;font-weight:600;color:${dayNumColor};margin-bottom:6px;line-height:1;">${dc}</div>`;
+        }
+
+        let evHTML = '';
+        events.forEach(ev => {
+          const cat = EXPORT_CAT[ev.category] || EXPORT_CAT.outro;
+          const time = ev.time ? `<span style="font-weight:800;margin-right:5px;font-variant-numeric:tabular-nums;">${ev.time}</span>` : '';
+          const locationHTML = ev.city ? `
+            <div style="font-size:9px; margin-top:3px; opacity:0.8; font-weight:500; display:flex; align-items:flex-start; gap:3px;">
+              <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:1px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span style="flex:1; min-width:0; line-height:1.2;">${escapeHTML(ev.city)}</span>
+            </div>` : '';
+          evHTML += `
+            <div style="font-size:10.5px;padding:5px 7px;margin-bottom:4px;border-left:3px solid ${cat.border};background:${cat.bg};color:${cat.text};border-radius:4px;font-weight:600;line-height:1.35;word-wrap:break-word;overflow-wrap:break-word;overflow-wrap:break-word;">
+              <div>${time}${escapeHTML(ev.title)}</div>
+              ${locationHTML}
+            </div>`;
+        });
+
+        bodyHTML += `<td style="${borderRight}${borderBottom}${dayBg}height:140px;padding:8px 8px 6px;vertical-align:top;width:14.285%;">
+          ${dayNumHTML}
+          ${evHTML}
+        </td>`;
+        dc++;
       }
-      return true;
-    };
-    let lo = Math.max.apply(null, heights);
-    let hi = heights.reduce((x, y) => x + y, 0);
-    while (lo < hi) { const mid = Math.floor((lo + hi) / 2); if (fits(mid)) hi = mid; else lo = mid + 1; }
-    const cols = [[]];
-    let cur = 0;
-    for (let i = 0; i < n; i++) {
-      if (cur + heights[i] > lo && cols.length < N) { cols.push([]); cur = 0; }
-      cols[cols.length - 1].push(i);
-      cur += heights[i];
+
+      if (isLastCol) bodyHTML += '</tr>';
     }
-    while (cols.length < N) cols.push([]);
-    return cols;
+
+    const headerCellStyle = 'padding:14px 6px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.22em;width:14.285%;border-bottom:1px solid rgba(120,80,40,.10);';
+
+    const photoHTML = photoSrc
+      ? `<img src="${photoSrc}" style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid #fff;box-shadow:0 0 0 1px #c8102e,0 8px 24px rgba(124,58,237,.30);flex-shrink:0;display:block;">`
+      : `<div style="width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,#c8102e,#7a0a1c);box-shadow:0 0 0 4px #fff,0 0 0 5px #c8102e;flex-shrink:0;"></div>`;
+
+    wrapper.innerHTML = `
+      <div style="display:flex;align-items:center;gap:24px;padding:24px 28px;margin-bottom:24px;background:#fff;border-radius:18px;border:1px solid rgba(0,0,0,.06);box-shadow:0 1px 2px rgba(80,40,20,.04),0 8px 24px rgba(80,40,20,.06);">
+        ${photoHTML}
+        <div>
+          <div style="font-family:'Fraunces',serif;font-size:32px;font-weight:700;letter-spacing:-.02em;line-height:1.1;">Professora Léo Simão</div>
+          <div style="font-size:12px;text-transform:uppercase;letter-spacing:.24em;color:#5a514a;margin-top:8px;font-weight:700;">Agenda Oficial · ${y}</div>
+        </div>
+      </div>
+
+      <div style="margin:8px 6px 18px;font-family:'Fraunces',serif;font-size:42px;font-weight:600;letter-spacing:-.03em;line-height:1;">
+        ${months[m]} <span style="color:#9a8f86;font-weight:400;">${y}</span>
+      </div>
+
+      <table style="width:100%;border-collapse:collapse;background:#fff;border-radius:18px;overflow:hidden;border:1px solid rgba(0,0,0,.06);table-layout:fixed;box-shadow:0 1px 2px rgba(80,40,20,.04),0 8px 24px rgba(80,40,20,.06);">
+        <thead>
+          <tr style="background:#faf6ed;">
+            <th style="${headerCellStyle}color:#c8102e;">Dom</th>
+            <th style="${headerCellStyle}color:#9a8f86;">Seg</th>
+            <th style="${headerCellStyle}color:#9a8f86;">Ter</th>
+            <th style="${headerCellStyle}color:#9a8f86;">Qua</th>
+            <th style="${headerCellStyle}color:#9a8f86;">Qui</th>
+            <th style="${headerCellStyle}color:#9a8f86;">Sex</th>
+            <th style="${headerCellStyle}color:#c8102e;">Sáb</th>
+          </tr>
+        </thead>
+        <tbody>${bodyHTML}</tbody>
+      </table>
+    `;
+
+    return wrapper;
   }
 
+  // ===== Nova exportação: estilo "Compromissos" em 1 a 3 colunas =====
   // Paleta rotativa: cada dia recebe uma cor, e todos os compromissos do dia usam ela
   const DAY_PALETTE = ['#c8102e','#c8102e','#0f766e','#1f4e8c','#b0134d','#a04e0f','#146b74','#1f6f4a'];
   function hexRgba(hex, a) {
@@ -1577,16 +1664,15 @@
         cards += `<div style="padding:11px 13px;margin-bottom:7px;background:#fff;border-radius:10px;border-left:5px solid ${col};box-shadow:0 1px 3px ${hexRgba(col,.18)};">
           <div style="display:flex;align-items:baseline;gap:10px;">
             <span style="font-family:'Fraunces',serif;font-size:24px;font-weight:700;color:${col};font-variant-numeric:tabular-nums;line-height:1.1;white-space:nowrap;">${timeCell}</span>
-            <span style="font-size:24px;font-weight:700;color:#1a1411;line-height:1.2;word-break:break-word;">${escapeHTML(ev.title)}</span>
+            <span style="font-size:24px;font-weight:700;color:#1a1411;line-height:1.2;overflow-wrap:break-word;">${escapeHTML(ev.title)}</span>
           </div>
-          ${loc ? `<div style="margin-top:6px;font-size:18px;color:#5a514a;line-height:1.3;word-break:break-word;">${escapeHTML(loc)}</div>` : ''}
-          ${ev.notes ? `<div style="margin-top:5px;font-size:17px;color:#5a514a;line-height:1.35;word-break:break-word;">${escapeHTML(ev.notes)}</div>` : ''}
+          ${loc ? `<div style="margin-top:6px;font-size:18px;color:#5a514a;line-height:1.3;overflow-wrap:break-word;">${escapeHTML(loc)}</div>` : ''}
+          ${ev.notes ? `<div style="margin-top:5px;font-size:17px;color:#5a514a;line-height:1.35;overflow-wrap:break-word;">${escapeHTML(ev.notes)}</div>` : ''}
           <div style="margin-top:7px;font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:${col};">${escapeHTML(CAT_LABELS[c] || 'Compromisso')}</div>
         </div>`;
       });
 
       const el = document.createElement('div');
-      el.style.marginBottom = GROUP_MB + 'px';
       el.innerHTML = `<div style="border-radius:13px;overflow:hidden;box-shadow:0 2px 8px ${hexRgba(col,.18)};">
           <div style="background:${col};color:#fff;padding:9px 14px;font-family:'Fraunces',serif;font-size:26px;font-weight:700;line-height:1.15;letter-spacing:-.01em;">${label}</div>
           <div style="background:${hexRgba(col,.10)};padding:9px 9px 2px;">${cards}</div>
@@ -1602,7 +1688,6 @@
     document.body.removeChild(meas);
 
     const N = Math.min(MAX_COLS, Math.max(1, Math.ceil(total / TARGET)));
-    const cols = balancedSplit(heights, N);
     const wrapW = pad*2 + N*colW + (N-1)*gap;
 
     const photoHTML = photoSrc
@@ -1634,23 +1719,35 @@
     if (!groupEls.length) {
       row.innerHTML = `<div style="width:${colW}px;padding:48px 24px;text-align:center;color:#9a8f86;background:#fff;border:1px dashed rgba(120,80,40,.25);border-radius:16px;font-size:18px;font-weight:600;">Nenhum compromisso neste mês.</div>`;
     } else {
-      cols.forEach(idxs => {
+      const colBoxes = [];
+      for (let i = 0; i < N; i++) {
         const c = document.createElement('div');
-        c.style.cssText = `width:${colW}px;`;
-        idxs.forEach(i => c.appendChild(groupEls[i]));
+        c.style.cssText = `width:${colW}px;display:flex;flex-direction:column;gap:${GROUP_MB}px;`;
         row.appendChild(c);
-      });
+        colBoxes.push(c);
+      }
+      // Ordem de leitura: dia 1 na coluna 1, dia 2 na coluna 2, e assim por diante
+      groupEls.forEach((el, i) => colBoxes[i % N].appendChild(el));
     }
 
     return { wrapper, width: wrapW };
   }
 
-  async function exportImage() {
+  async function exportImage(modo) {
+    modo = modo || 'lista';
     closePanel();
     showStatus("Gerando imagem…", false);
     try { await document.fonts.ready; } catch(e) {}
     const photoSrc = await getPhotoDataURL();
-    const { wrapper, width } = buildListExportContainer(photoSrc);
+
+    let wrapper, width;
+    if (modo === 'calendario') {
+      wrapper = buildExportContainer(photoSrc);
+      width = 1280;
+    } else {
+      const r = buildListExportContainer(photoSrc);
+      wrapper = r.wrapper; width = r.width;
+    }
     document.body.appendChild(wrapper);
 
     await new Promise(r => setTimeout(r, 250));
@@ -1665,8 +1762,9 @@
         windowWidth: width,
         windowHeight: wrapper.offsetHeight
       });
+      const sufixo = (modo === 'calendario') ? 'Calendario' : 'Lista';
       const link = document.createElement('a');
-      link.download = `Agenda_${months[dt.getMonth()]}_${dt.getFullYear()}.png`;
+      link.download = `Agenda_${sufixo}_${months[dt.getMonth()]}_${dt.getFullYear()}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
       showStatus("✓ Imagem salva");

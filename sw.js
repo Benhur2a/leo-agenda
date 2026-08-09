@@ -1,7 +1,7 @@
 /* Cache offline da Agenda (PWA).
    Estrategia: rede primeiro (mantem a atualizacao automatica),
    cache como reserva quando estiver sem internet. */
-const CACHE = 'agenda-leo-v3';
+const CACHE = 'agenda-leo-v6';
 const SHELL = [
   './', './index.html', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png',
