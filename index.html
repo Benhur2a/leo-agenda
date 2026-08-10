@@ -912,6 +912,9 @@
   let selectedCategory = "reuniao";
   let editingEventId = null;
   let saveTimer = null, statusHideTimer = null, notifTimer = null;
+  let pendentes = {};   // id -> alteração ainda não confirmada na nuvem
+  let saveTimers = {};  // um cronômetro por dia (antes era um só, e um cancelava o outro)
+  let exportando = false;
 
   const months = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
   const weekdaysLong = ["Domingo","Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado"];
@@ -984,7 +987,7 @@
   async function init() {
     showStatus("Baixando agenda…", false);
     try {
-      const res = await fetch(API_URL + "?action=read");
+      const res = await fetch(API_URL + "?action=read&_=" + Date.now(), { cache: 'no-store' });
       globalData = await res.json() || {};
       showStatus("Agenda carregada");
     } catch(err) {
@@ -1313,9 +1316,23 @@
   }
 
   function queueSave(id, d, m, y, color, text) {
+    pendentes[id] = { d, m, y, color, text };
+    console.log('[sync] alteração local em', id, '| pendentes:', Object.keys(pendentes).length);
     showStatus("Digitando…", false);
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(() => saveToCloud(id, d, m, y, color, text), 1200);
+    clearTimeout(saveTimers[id]);
+    saveTimers[id] = setTimeout(() => saveToCloud(id, d, m, y, color, text), 1200);
+  }
+
+  // Envia agora tudo que ainda está pendente e espera terminar
+  async function flushSaves(){
+    const ids = Object.keys(pendentes);
+    if (!ids.length) return;
+    console.log('[sync] enviando pendências antes de continuar:', ids);
+    for (const id of ids) {
+      clearTimeout(saveTimers[id]);
+      const p = pendentes[id];
+      await saveToCloud(id, p.d, p.m, p.y, p.color, p.text);
+    }
   }
   async function saveToCloud(id, d, m, y, color, text) {
     showStatus("Salvando…", false);
@@ -1325,23 +1342,33 @@
       const fetchPromise = fetch(url, { mode:'no-cors' });
       const timeoutPromise = new Promise(r => setTimeout(r, 4000));
       await Promise.race([fetchPromise, timeoutPromise]);
+      delete pendentes[id];
+      console.log('[sync] salvo na nuvem:', id, '| pendentes restantes:', Object.keys(pendentes).length);
       showStatus("✓ Salvo");
-    } catch(err) { console.error(err); showStatus("⚠ Erro ao salvar"); }
+    } catch(err) { console.error('[sync] falha ao salvar', id, err); showStatus("⚠ Erro ao salvar"); }
   }
 
   function changeMonth(delta) { dt.setMonth(dt.getMonth() + delta); drawCalendar(); }
   function goToday() { dt = new Date(); drawCalendar(); }
 
   async function reloadFromCloud(){
+    if (exportando) { console.log('[sync] recarga adiada: exportação em andamento'); return; }
     showStatus("Recarregando…", false);
     try{
-      const res = await fetch(API_URL + "?action=read");
-      globalData = await res.json() || {};
+      const res = await fetch(API_URL + "?action=read&_=" + Date.now(), { cache: 'no-store' });
+      const daNuvem = await res.json() || {};
+      // Alterações ainda não confirmadas vencem sobre o que veio da nuvem
+      const ids = Object.keys(pendentes);
+      if (ids.length) {
+        console.log('[sync] preservando alterações locais na recarga:', ids);
+        ids.forEach(id => { daNuvem[id] = { text: pendentes[id].text, color: pendentes[id].color }; });
+      }
+      globalData = daNuvem;
       dayCache = {};
       drawCalendar(); renderList();
       scheduleReschedule();
       showStatus("✓ Agenda atualizada");
-    }catch(err){ console.error(err); showStatus("⚠ Sem conexão"); }
+    }catch(err){ console.error('[sync] falha ao recarregar', err); showStatus("⚠ Sem conexão"); }
   }
 
   /* ============ NOTIFICAÇÕES (Web / PWA) ============ */
@@ -1736,7 +1763,10 @@
   async function exportImage(modo) {
     modo = modo || 'lista';
     closePanel();
+    exportando = true;
     showStatus("Gerando imagem…", false);
+    await flushSaves();
+    console.log('[export] gerando', modo, 'com os dados atuais');
     try { await document.fonts.ready; } catch(e) {}
     const photoSrc = await getPhotoDataURL();
 
@@ -1773,6 +1803,7 @@
       showStatus("⚠ Erro ao gerar imagem");
     } finally {
       document.body.removeChild(wrapper);
+      exportando = false;
     }
   }
 
