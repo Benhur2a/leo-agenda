@@ -1,7 +1,7 @@
 /* Cache offline da Agenda (PWA).
    Estrategia: rede primeiro (mantem a atualizacao automatica),
    cache como reserva quando estiver sem internet. */
-const CACHE = 'agenda-leo-v7';
+const CACHE = 'agenda-leo-v8';
 const SHELL = [
   './', './index.html', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png',
@@ -53,7 +53,7 @@ self.addEventListener('fetch', e => {
 
   if (url.origin === self.location.origin) {
     e.respondWith(
-      fetch(req)
+      fetch(req, { cache: 'reload' })
         .then(res => {
           if (res && res.status === 200) {
             const clone = res.clone();

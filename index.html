@@ -820,6 +820,17 @@
       </div>
 
       <div class="card">
+        <h3>Diagnóstico</h3>
+        <p class="desc">Use isto se algo não estiver salvando ou aparecendo errado. Tire um print desta tela e envie para quem cuida do aplicativo.</p>
+        <div class="status-line"><span class="status-dot on"></span><span>Versão do aplicativo: <b id="verLabel"></b></span></div>
+        <pre id="diagBox" style="margin:12px 0 0;padding:12px 14px;background:rgba(255,253,250,.7);border:1px solid var(--glass-edge-soft);border-radius:12px;font-size:.72rem;line-height:1.5;color:var(--ink-soft);white-space:pre-wrap;word-break:break-word;max-height:220px;overflow:auto;"></pre>
+        <button class="btn" onclick="forcarAtualizacao()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          Forçar atualização do aplicativo
+        </button>
+      </div>
+
+      <div class="card">
         <h3>Sobre</h3>
         <p class="about-line">Agenda Oficial da Professora Léo Simão. Os dados são sincronizados na nuvem e ficam disponíveis em todos os aparelhos.</p>
       </div>
@@ -912,6 +923,16 @@
   let selectedCategory = "reuniao";
   let editingEventId = null;
   let saveTimer = null, statusHideTimer = null, notifTimer = null;
+  const APP_VERSION = '2026.08.10';
+  const diagLog = [];
+  function reg(msg){
+    const h = new Date().toLocaleTimeString('pt-BR');
+    diagLog.unshift(h + '  ' + msg);
+    if (diagLog.length > 40) diagLog.pop();
+    console.log(msg);
+    const box = document.getElementById('diagBox');
+    if (box) box.textContent = diagLog.join('\n');
+  }
   let pendentes = {};   // id -> alteração ainda não confirmada na nuvem
   let saveTimers = {};  // um cronômetro por dia (antes era um só, e um cancelava o outro)
   let exportando = false;
@@ -997,6 +1018,8 @@
     loadLeadMinutes();
     drawCalendar();
     renderList();
+    const vl = $('verLabel'); if (vl) vl.textContent = APP_VERSION;
+    reg('[app] versão ' + APP_VERSION + ' iniciada');
     setupApp();
     scheduleReschedule();
   }
@@ -1317,7 +1340,7 @@
 
   function queueSave(id, d, m, y, color, text) {
     pendentes[id] = { d, m, y, color, text };
-    console.log('[sync] alteração local em', id, '| pendentes:', Object.keys(pendentes).length);
+    reg('[sync] alteração local em', id, '| pendentes:', Object.keys(pendentes).length);
     showStatus("Digitando…", false);
     clearTimeout(saveTimers[id]);
     saveTimers[id] = setTimeout(() => saveToCloud(id, d, m, y, color, text), 1200);
@@ -1327,7 +1350,7 @@
   async function flushSaves(){
     const ids = Object.keys(pendentes);
     if (!ids.length) return;
-    console.log('[sync] enviando pendências antes de continuar:', ids);
+    reg('[sync] enviando pendências antes de continuar:', ids);
     for (const id of ids) {
       clearTimeout(saveTimers[id]);
       const p = pendentes[id];
@@ -1343,7 +1366,7 @@
       const timeoutPromise = new Promise(r => setTimeout(r, 4000));
       await Promise.race([fetchPromise, timeoutPromise]);
       delete pendentes[id];
-      console.log('[sync] salvo na nuvem:', id, '| pendentes restantes:', Object.keys(pendentes).length);
+      reg('[sync] salvo na nuvem:', id, '| pendentes restantes:', Object.keys(pendentes).length);
       showStatus("✓ Salvo");
     } catch(err) { console.error('[sync] falha ao salvar', id, err); showStatus("⚠ Erro ao salvar"); }
   }
@@ -1352,7 +1375,7 @@
   function goToday() { dt = new Date(); drawCalendar(); }
 
   async function reloadFromCloud(){
-    if (exportando) { console.log('[sync] recarga adiada: exportação em andamento'); return; }
+    if (exportando) { reg('[sync] recarga adiada: exportação em andamento'); return; }
     showStatus("Recarregando…", false);
     try{
       const res = await fetch(API_URL + "?action=read&_=" + Date.now(), { cache: 'no-store' });
@@ -1360,7 +1383,7 @@
       // Alterações ainda não confirmadas vencem sobre o que veio da nuvem
       const ids = Object.keys(pendentes);
       if (ids.length) {
-        console.log('[sync] preservando alterações locais na recarga:', ids);
+        reg('[sync] preservando alterações locais na recarga:', ids);
         ids.forEach(id => { daNuvem[id] = { text: pendentes[id].text, color: pendentes[id].color }; });
       }
       globalData = daNuvem;
@@ -1512,6 +1535,22 @@
     if(ok){ await rescheduleNotifications(); showStatus("\u2713 Notifica\u00e7\u00f5es ativadas"); }
     else showStatus("\u26a0 Permiss\u00e3o negada");
     refreshNotifStatus();
+  }
+
+  async function forcarAtualizacao(){
+    showStatus('Atualizando…', false);
+    try{
+      await flushSaves();
+      if ('serviceWorker' in navigator) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        for (const r of regs) await r.unregister();
+      }
+      if (window.caches) {
+        const ks = await caches.keys();
+        for (const k of ks) await caches.delete(k);
+      }
+    }catch(e){ console.error(e); }
+    location.reload(true);
   }
 
   function setupApp(){
@@ -1766,7 +1805,7 @@
     exportando = true;
     showStatus("Gerando imagem…", false);
     await flushSaves();
-    console.log('[export] gerando', modo, 'com os dados atuais');
+    reg('[export] gerando', modo, 'com os dados atuais');
     try { await document.fonts.ready; } catch(e) {}
     const photoSrc = await getPhotoDataURL();
 
