@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#c8102e">
+<meta name="theme-color" content="#8e1d13">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Agenda Léo">
-<title>Agenda Oficial · Professora Léo Simão</title>
+<meta name="apple-mobile-web-app-title" content="Agenda Elzilene">
+<title>Agenda Oficial · Elzilene da CUT</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,800;9..144,900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -20,9 +20,9 @@
     --ink:#1a1411;
     --ink-soft:#5a514a;
     --ink-muted:#9a8f86;
-    --primary:#c8102e;
-    --primary-deep:#7a0a1c;
-    --primary-glow:rgba(200,16,46,.18);
+    --primary:#8e1d13;
+    --primary-deep:#4e0f0a;
+    --primary-glow:rgba(142,29,19,.18);
 
     --glass-light:rgba(255,253,250,.55);
     --glass-medium:rgba(255,253,250,.72);
@@ -33,14 +33,14 @@
     --glass-shadow-drop:0 1px 2px rgba(80,40,20,.04), 0 12px 32px rgba(80,40,20,.10), 0 32px 64px rgba(80,40,20,.06);
     --glass-shadow-deep:0 8px 24px rgba(80,40,20,.12), 0 32px 64px rgba(80,40,20,.18);
 
-    --cat-publico:#c8102e;
-    --cat-reuniao:#1f4e8c;
-    --cat-evento:#c8102e;
-    --cat-solenidade:#146b74;
-    --cat-visita:#1f6f4a;
-    --cat-imprensa:#a04e0f;
-    --cat-pessoal:#5b3a8a;
-    --cat-outro:#4a4640;
+    --cat-publico:#8e1d13;
+    --cat-reuniao:#2b4a6f;
+    --cat-evento:#8e1d13;
+    --cat-solenidade:#125a61;
+    --cat-visita:#1f6046;
+    --cat-imprensa:#8a4a12;
+    --cat-pessoal:#52306e;
+    --cat-outro:#4a4038;
 
     --radius:18px;
     --nav-h:74px;
@@ -56,11 +56,11 @@
     -webkit-font-smoothing:antialiased;
     overflow-x:hidden;
     min-height:100vh;
-    background:#f7eee2;
+    background:#f6ece0;
     background-image:
-      radial-gradient(circle at 100% 0%, #ffd8c0 0%, transparent 40%),
-      radial-gradient(circle at 0% 100%, #ffe0d4 0%, transparent 45%),
-      linear-gradient(135deg, #faf2e6 0%, #f5e8d6 100%);
+      radial-gradient(circle at 100% 0%, #efd3bb 0%, transparent 40%),
+      radial-gradient(circle at 0% 100%, #f0d8c6 0%, transparent 45%),
+      linear-gradient(135deg, #faf3e8 0%, #f2e4d2 100%);
     background-attachment:fixed;
   }
   body::before, body::after{
@@ -70,16 +70,16 @@
   }
   body::before{
     top:-10%;left:-5%;width:55vw;height:55vw;
-    background:radial-gradient(circle, rgba(200,16,46,.32) 0%, transparent 70%);
+    background:radial-gradient(circle, rgba(142,29,19,.32) 0%, transparent 70%);
   }
   body::after{
     bottom:-15%;right:-10%;width:60vw;height:60vw;
-    background:radial-gradient(circle, rgba(255,160,60,.30) 0%, transparent 70%);
+    background:radial-gradient(circle, rgba(201,135,70,.30) 0%, transparent 70%);
   }
   .ambient{
     position:fixed;top:30%;left:50%;transform:translate(-50%,-50%);
     width:40vw;height:40vw;border-radius:50%;
-    background:radial-gradient(circle, rgba(255,200,140,.4) 0%, transparent 70%);
+    background:radial-gradient(circle, rgba(214,175,132,.4) 0%, transparent 70%);
     filter:blur(80px);pointer-events:none;z-index:0;
   }
 
@@ -103,8 +103,8 @@
   .brand-photo{
     width:140px;height:140px;border-radius:50%;object-fit:cover;
     border:4px solid rgba(255,255,255,.95);
-    box-shadow:0 0 0 1px var(--primary), 0 8px 24px rgba(200,16,46,.30);
-    flex-shrink:0;background:linear-gradient(135deg,#c8102e,#7a0a1c)
+    box-shadow:0 0 0 1px var(--primary), 0 8px 24px rgba(142,29,19,.30);
+    flex-shrink:0;background:linear-gradient(135deg,#8e1d13,#4e0f0a)
   }
   .brand-text{min-width:0}
   .brand-text h1{
@@ -145,7 +145,7 @@
   .btn-primary:hover{
     background:linear-gradient(135deg,var(--primary) 0%, var(--primary-deep) 100%);
     border-color:rgba(255,255,255,.2);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.25), 0 8px 22px rgba(200,16,46,.4)
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.25), 0 8px 22px rgba(142,29,19,.4)
   }
   .btn svg{width:16px;height:16px}
 
@@ -244,7 +244,7 @@
   .day.empty{background:rgba(120,80,40,.025);cursor:default}
   .day:hover:not(.empty){background:rgba(255,255,255,.5)}
   .day.today{
-    background:linear-gradient(180deg, var(--primary-glow) 0%, rgba(255,200,140,.08) 100%)
+    background:linear-gradient(180deg, var(--primary-glow) 0%, rgba(214,175,132,.08) 100%)
   }
   .day-num{
     font-family:'Fraunces',serif;font-size:1.05rem;font-weight:600;
@@ -257,7 +257,7 @@
     width:28px;height:28px;
     background:linear-gradient(135deg,var(--primary) 0%, var(--primary-deep) 100%);
     color:#fff;border-radius:50%;font-size:.85rem;font-weight:700;padding:0;
-    box-shadow:0 2px 8px rgba(200,16,46,.4), inset 0 1px 0 rgba(255,255,255,.3)
+    box-shadow:0 2px 8px rgba(142,29,19,.4), inset 0 1px 0 rgba(255,255,255,.3)
   }
   .events-list{
     display:flex;flex-direction:column;gap:3px;
@@ -275,13 +275,13 @@
     color:var(--ink);
     max-width:100%;min-width:0
   }
-  .event-pill.cat-publico{border-left-color:var(--cat-publico);background:rgba(200,16,46,.10);color:#7a0a1c}
-  .event-pill.cat-reuniao{border-left-color:var(--cat-reuniao);background:rgba(31,78,140,.10);color:#16365e}
-  .event-pill.cat-visita{border-left-color:var(--cat-visita);background:rgba(31,111,74,.10);color:#154e35}
-  .event-pill.cat-imprensa{border-left-color:var(--cat-imprensa);background:rgba(160,78,15,.10);color:#6f370b}
-  .event-pill.cat-pessoal{border-left-color:var(--cat-pessoal);background:rgba(91,58,138,.10);color:#3e2860}
-  .event-pill.cat-evento{border-left-color:var(--cat-evento);background:rgba(200,16,46,.10);color:#7a0a1c}
-  .event-pill.cat-solenidade{border-left-color:var(--cat-solenidade);background:rgba(20,107,116,.12);color:#0c4a50}
+  .event-pill.cat-publico{border-left-color:var(--cat-publico);background:rgba(142,29,19,.10);color:#4e0f0a}
+  .event-pill.cat-reuniao{border-left-color:var(--cat-reuniao);background:rgba(43,74,111,.10);color:#1e3450}
+  .event-pill.cat-visita{border-left-color:var(--cat-visita);background:rgba(31,96,70,.10);color:#14412f}
+  .event-pill.cat-imprensa{border-left-color:var(--cat-imprensa);background:rgba(138,74,18,.10);color:#5f320c}
+  .event-pill.cat-pessoal{border-left-color:var(--cat-pessoal);background:rgba(82,48,110,.10);color:#38214c}
+  .event-pill.cat-evento{border-left-color:var(--cat-evento);background:rgba(142,29,19,.10);color:#4e0f0a}
+  .event-pill.cat-solenidade{border-left-color:var(--cat-solenidade);background:rgba(18,90,97,.12);color:#0b3f44}
   .event-pill .time{font-weight:800;margin-right:5px;font-variant-numeric:tabular-nums}
   .event-more{
     font-size:.66rem;color:var(--ink-muted);
@@ -348,7 +348,7 @@
   .conflict-warn{
     display:flex;align-items:center;gap:10px;margin-bottom:18px;
     padding:12px 16px;border-radius:14px;
-    background:rgba(200,16,46,.08);border:1px solid rgba(200,16,46,.25);
+    background:rgba(142,29,19,.08);border:1px solid rgba(142,29,19,.25);
     color:var(--primary-deep);font-size:.84rem;font-weight:700
   }
   .conflict-warn svg{width:18px;height:18px;flex-shrink:0}
@@ -356,7 +356,7 @@
     display:inline-flex;align-items:center;gap:5px;margin-top:8px;
     font-size:.64rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;
     padding:4px 10px;border-radius:100px;
-    background:rgba(200,16,46,.12);color:var(--primary-deep)
+    background:rgba(142,29,19,.12);color:var(--primary-deep)
   }
   .conflict-badge svg{width:12px;height:12px}
 
@@ -369,7 +369,7 @@
     color:var(--ink-soft);transition:all .15s
   }
   .mini-btn:hover{color:var(--ink);background:#fff;transform:translateY(-1px)}
-  .mini-btn.wa:hover{color:#1f8f4a}
+  .mini-btn.wa:hover{color:#1f7a44}
   .mini-btn svg{width:16px;height:16px}
   .lc-meta.tappable,.event-meta.tappable{
     cursor:pointer;text-decoration:underline;
@@ -427,7 +427,7 @@
   .lead-option.selected{
     background:linear-gradient(135deg,var(--primary) 0%,var(--primary-deep) 100%);
     color:#fff;border-color:transparent;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.25), 0 4px 14px rgba(200,16,46,.35)
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.25), 0 4px 14px rgba(142,29,19,.35)
   }
   .status-line{
     display:flex;align-items:center;gap:9px;font-size:.82rem;font-weight:700;
@@ -435,8 +435,8 @@
     background:rgba(255,253,250,.6);border:1px solid var(--glass-edge-soft)
   }
   .status-dot{width:9px;height:9px;border-radius:50%;background:var(--ink-muted);flex-shrink:0}
-  .status-dot.on{background:#1f6f4a;box-shadow:0 0 0 3px rgba(31,111,74,.18)}
-  .status-dot.off{background:var(--primary);box-shadow:0 0 0 3px rgba(200,16,46,.15)}
+  .status-dot.on{background:#1f6046;box-shadow:0 0 0 3px rgba(31,96,70,.18)}
+  .status-dot.off{background:var(--primary);box-shadow:0 0 0 3px rgba(142,29,19,.15)}
   .card .btn{margin-top:16px;width:100%;justify-content:center}
   .about-line{font-size:.8rem;color:var(--ink-muted);line-height:1.6}
 
@@ -546,7 +546,7 @@
     transition:all .12s
   }
   .icon-btn:hover{background:rgba(120,80,40,.1);color:var(--ink)}
-  .icon-btn.danger:hover{background:rgba(200,16,46,.12);color:var(--primary)}
+  .icon-btn.danger:hover{background:rgba(142,29,19,.12);color:var(--primary)}
   .icon-btn svg{width:15px;height:15px}
   .empty-events{
     padding:24px;text-align:center;color:var(--ink-muted);font-size:.85rem;
@@ -634,7 +634,7 @@
   .nav-item.active{
     color:#fff;
     background:linear-gradient(135deg,var(--primary) 0%,var(--primary-deep) 100%);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.25), 0 4px 14px rgba(200,16,46,.4)
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.25), 0 4px 14px rgba(142,29,19,.4)
   }
 
   #syncStatus{
@@ -659,7 +659,7 @@
     border-radius:var(--radius);
     background:linear-gradient(135deg,var(--primary) 0%,var(--primary-deep) 100%);
     color:#fff;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.2), 0 8px 24px rgba(200,16,46,.30);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.2), 0 8px 24px rgba(142,29,19,.30);
     position:relative
   }
   .update-banner > svg{width:24px;height:24px;flex-shrink:0;opacity:.95}
@@ -726,13 +726,17 @@
 
   <header class="topbar">
     <div class="brand">
-      <img src="foto-leo.jpg" alt="Professora Léo Simão" class="brand-photo" onerror="this.style.background='linear-gradient(135deg,#c8102e,#7a0a1c)';this.removeAttribute('src')">
+      <img src="foto-elzilene.jpg" alt="Elzilene da CUT" class="brand-photo" onerror="this.style.background='linear-gradient(135deg,#8e1d13,#4e0f0a)';this.removeAttribute('src')">
       <div class="brand-text">
-        <h1>Professora Léo Simão</h1>
-        <div class="tag">Agenda Oficial · 2026</div>
+        <h1>Elzilene da CUT</h1>
+        <div class="tag">Deputada Federal · 1300</div>
       </div>
     </div>
     <div class="top-actions">
+      <button class="btn" onclick="exportImage('dia')" title="Salvar a agenda de hoje">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="15" x2="16" y2="15"/><line x1="8" y1="18" x2="13" y2="18"/></svg>
+        <span class="btn-text">Hoje</span>
+      </button>
       <button class="btn" onclick="exportImage('lista')" title="Salvar como lista de compromissos">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
         <span class="btn-text">Lista</span>
@@ -824,6 +828,14 @@
         <p class="desc">Use isto se algo não estiver salvando ou aparecendo errado. Tire um print desta tela e envie para quem cuida do aplicativo.</p>
         <div class="status-line"><span class="status-dot on"></span><span>Versão do aplicativo: <b id="verLabel"></b></span></div>
         <pre id="diagBox" style="margin:12px 0 0;padding:12px 14px;background:rgba(255,253,250,.7);border:1px solid var(--glass-edge-soft);border-radius:12px;font-size:.72rem;line-height:1.5;color:var(--ink-soft);white-space:pre-wrap;word-break:break-word;max-height:220px;overflow:auto;"></pre>
+        <button class="btn" onclick="testarConexao()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+          Testar conexão
+        </button>
+        <button class="btn" onclick="copiarDiagnostico()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copiar diagnóstico
+        </button>
         <button class="btn" onclick="forcarAtualizacao()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
           Forçar atualização do aplicativo
@@ -832,7 +844,7 @@
 
       <div class="card">
         <h3>Sobre</h3>
-        <p class="about-line">Agenda Oficial da Professora Léo Simão. Os dados são sincronizados na nuvem e ficam disponíveis em todos os aparelhos.</p>
+        <p class="about-line">Agenda Oficial da Elzilene da CUT. Os dados são sincronizados na nuvem e ficam disponíveis em todos os aparelhos.</p>
       </div>
 
     </div>
@@ -906,6 +918,10 @@
     </form>
   </div>
   <div class="panel-footer">
+    <button class="btn" onclick="exportarDiaAtual()" id="imgDiaBtn" title="Gerar imagem deste dia" style="flex:0 0 auto;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+      <span class="btn-text">Imagem</span>
+    </button>
     <button class="btn" onclick="resetForm()" id="cancelBtn">Limpar</button>
     <button class="btn btn-primary" onclick="saveEventForm()" id="saveBtn">Adicionar</button>
   </div>
@@ -914,7 +930,7 @@
 <div id="syncStatus">Sincronizando…</div>
 
 <script>
-  const API_URL = "https://script.google.com/macros/s/AKfycbxtUYtxDgIZimacziZmUO95_Ta5b6VoqPAm3aPDIUm4Eg4WexN_u-I6UJUHnS0wfNphPA/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbwiH05JBAsg1TGzxHu3kf6drTYA9or-uBB1vyB0hVVWfMi-sq4AwIXSfsgHdUFrfPl1Vg/exec";
 
   let dt = new Date();
   let globalData = {};
@@ -923,15 +939,156 @@
   let selectedCategory = "reuniao";
   let editingEventId = null;
   let saveTimer = null, statusHideTimer = null, notifTimer = null;
-  const APP_VERSION = '2026.08.10';
+  const APP_VERSION = '2026.08.25';
   const diagLog = [];
-  function reg(msg){
+  function reg(){
+    const partes = Array.prototype.slice.call(arguments).map(v => {
+      if (typeof v === 'string') return v;
+      try { return JSON.stringify(v); } catch(e) { return String(v); }
+    });
+    const msg = partes.join(' ');
     const h = new Date().toLocaleTimeString('pt-BR');
     diagLog.unshift(h + '  ' + msg);
-    if (diagLog.length > 40) diagLog.pop();
-    console.log(msg);
+    if (diagLog.length > 120) diagLog.pop();
+    console.log('[agenda]', msg);
     const box = document.getElementById('diagBox');
     if (box) box.textContent = diagLog.join('\n');
+  }
+  window.onerror = function(m, arq, ln, col){ reg('[js] ERRO GLOBAL:', m, '| linha', ln + ':' + col); };
+  window.addEventListener('unhandledrejection', ev => reg('[js] PROMESSA REJEITADA:', String(ev.reason)));
+
+  /* ===== Leitura da nuvem com diagnóstico completo ===== */
+  let ultimoDiagnostico = null;
+
+  async function baixarDaNuvem(origem){
+    const url = API_URL + "?action=read&_=" + Date.now();
+    const t0 = performance.now();
+    const info = { origem, url, etapa: 'inicio', online: navigator.onLine };
+    ultimoDiagnostico = info;
+
+    reg('[read] iniciando |', origem, '| navigator.onLine =', navigator.onLine);
+
+    if (!navigator.onLine) reg('[read] AVISO: o aparelho se declara offline');
+
+    let res;
+    try {
+      info.etapa = 'fetch';
+      res = await fetch(url, { cache: 'no-store', redirect: 'follow' });
+    } catch(err) {
+      info.etapa = 'falha_rede';
+      info.erro = String(err);
+      info.ms = Math.round(performance.now() - t0);
+      reg('[read] FALHA DE REDE:', String(err));
+      reg('[read] causa provável: CORS, bloqueio da implantação ou aparelho sem internet');
+      reg('[read] url usada:', url.slice(0, 120));
+      throw Object.assign(new Error('rede'), { diag: info });
+    }
+
+    info.etapa = 'resposta';
+    info.status = res.status;
+    info.ok = res.ok;
+    info.redirected = res.redirected;
+    info.urlFinal = res.url;
+    info.tipo = res.type;
+    info.contentType = res.headers.get('content-type') || '(sem content-type)';
+    info.ms = Math.round(performance.now() - t0);
+
+    reg('[read] status', res.status, '| ok', res.ok, '| tipo', res.type, '| ms', info.ms);
+    reg('[read] content-type:', info.contentType);
+    reg('[read] redirecionado:', res.redirected, '| url final:', String(res.url).slice(0, 110));
+
+    let corpo = '';
+    try {
+      corpo = await res.text();
+    } catch(err) {
+      info.etapa = 'falha_corpo';
+      info.erro = String(err);
+      reg('[read] FALHA ao ler o corpo:', String(err));
+      throw Object.assign(new Error('corpo'), { diag: info });
+    }
+
+    info.tamanho = corpo.length;
+    info.amostra = corpo.slice(0, 300);
+    reg('[read] tamanho do corpo:', corpo.length, 'caracteres');
+    reg('[read] primeiros 200 caracteres:', corpo.slice(0, 200).replace(/\s+/g, ' '));
+
+    const pareceHTML = /^\s*(<!doctype|<html|<script)/i.test(corpo);
+    if (pareceHTML) {
+      info.etapa = 'html_em_vez_de_json';
+      reg('[read] ERRO: o servidor devolveu HTML, não JSON');
+      if (/accounts\.google\.com|sign in|fazer login|Autoriza/i.test(corpo))
+        reg('[read] DIAGNÓSTICO: a implantação está pedindo login. Publique com acesso "Qualquer pessoa".');
+      else if (/Erro de script|Script function not found|não encontrada/i.test(corpo))
+        reg('[read] DIAGNÓSTICO: o Apps Script deu erro na execução. Veja a aba Logs da planilha.');
+      else
+        reg('[read] DIAGNÓSTICO: página de erro do Google. Confira a implantação e a autorização.');
+      throw Object.assign(new Error('html'), { diag: info });
+    }
+
+    let dados;
+    try {
+      dados = JSON.parse(corpo);
+    } catch(err) {
+      info.etapa = 'json_invalido';
+      info.erro = String(err);
+      reg('[read] ERRO: resposta não é JSON válido:', String(err));
+      throw Object.assign(new Error('json'), { diag: info });
+    }
+
+    if (dados && dados.erro) {
+      info.etapa = 'erro_do_backend';
+      info.erro = dados.erro;
+      reg('[read] O backend respondeu com erro:', dados.erro);
+      throw Object.assign(new Error('backend'), { diag: info });
+    }
+
+    const dias = Object.keys(dados || {}).length;
+    info.etapa = 'sucesso';
+    info.dias = dias;
+    reg('[read] SUCESSO |', dias, 'dia(s) recebido(s) |', info.ms, 'ms');
+    return dados || {};
+  }
+
+  /* Botão "Testar conexão" da tela de Ajustes */
+  async function testarConexao(){
+    reg('==================================================');
+    reg('[teste] iniciando teste de conexão');
+    reg('[teste] versão do app:', APP_VERSION);
+    reg('[teste] endereço da página:', location.href.slice(0, 110));
+    reg('[teste] URL do backend:', API_URL.slice(0, 110));
+    showStatus('Testando conexão…', false);
+
+    // 1. ping
+    try {
+      const r = await fetch(API_URL + '?action=ping&_=' + Date.now(), { cache: 'no-store' });
+      const t = await r.text();
+      reg('[teste] ping status', r.status, '| corpo:', t.slice(0, 200).replace(/\s+/g, ' '));
+    } catch(e) {
+      reg('[teste] ping FALHOU:', String(e));
+    }
+
+    // 2. read
+    try {
+      const dados = await baixarDaNuvem('teste');
+      reg('[teste] leitura OK |', Object.keys(dados).length, 'dia(s)');
+      showStatus('✓ Conexão funcionando');
+    } catch(e) {
+      reg('[teste] leitura FALHOU na etapa:', (e.diag && e.diag.etapa) || 'desconhecida');
+      showStatus('⚠ Falha no teste, veja o diagnóstico');
+    }
+    reg('==================================================');
+  }
+
+  function copiarDiagnostico(){
+    const txt = diagLog.slice().reverse().join('\n');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(txt).then(
+        () => showStatus('✓ Diagnóstico copiado'),
+        () => showStatus('⚠ Não consegui copiar')
+      );
+    } else {
+      showStatus('⚠ Copie manualmente pelo print');
+    }
   }
   let pendentes = {};   // id -> alteração ainda não confirmada na nuvem
   let saveTimers = {};  // um cronômetro por dia (antes era um só, e um cancelava o outro)
@@ -941,17 +1098,17 @@
   const weekdaysLong = ["Domingo","Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado"];
   const weekdaysShort = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
   const CATEGORIES = ["reuniao","publico","visita","imprensa","pessoal","outro"];
-  const CAT_COLORS = {reuniao:"#1f4e8c",evento:"#c8102e",solenidade:"#146b74",imprensa:"#a04e0f",visita:"#1f6f4a",pessoal:"#5b3a8a",publico:"#c8102e",outro:"#4a4640"};
+  const CAT_COLORS = {reuniao:"#2b4a6f",evento:"#8e1d13",solenidade:"#125a61",imprensa:"#8a4a12",visita:"#1f6046",pessoal:"#52306e",publico:"#8e1d13",outro:"#4a4038"};
   const CAT_LABELS = {reuniao:"Reunião",evento:"Evento cultural",solenidade:"Solenidade",imprensa:"Imprensa",visita:"Visita",pessoal:"Pessoal",publico:"Evento público",outro:"Outro"};
   const CAT_SOFT = {
-    reuniao:{bg:'rgba(31,78,140,.10)',fg:'#16365e'},
-    evento:{bg:'rgba(200,16,46,.10)',fg:'#7a0a1c'},
-    solenidade:{bg:'rgba(20,107,116,.12)',fg:'#0c4a50'},
-    imprensa:{bg:'rgba(160,78,15,.10)',fg:'#6f370b'},
-    visita:{bg:'rgba(31,111,74,.10)',fg:'#154e35'},
-    pessoal:{bg:'rgba(91,58,138,.10)',fg:'#3e2860'},
-    publico:{bg:'rgba(200,16,46,.10)',fg:'#7a0a1c'},
-    outro:{bg:'rgba(74,70,64,.10)',fg:'#2a2620'}
+    reuniao:{bg:'rgba(43,74,111,.10)',fg:'#1e3450'},
+    evento:{bg:'rgba(142,29,19,.10)',fg:'#4e0f0a'},
+    solenidade:{bg:'rgba(18,90,97,.12)',fg:'#0b3f44'},
+    imprensa:{bg:'rgba(138,74,18,.10)',fg:'#5f320c'},
+    visita:{bg:'rgba(31,96,70,.10)',fg:'#14412f'},
+    pessoal:{bg:'rgba(82,48,110,.10)',fg:'#38214c'},
+    publico:{bg:'rgba(142,29,19,.10)',fg:'#4e0f0a'},
+    outro:{bg:'rgba(74,64,56,.10)',fg:'#2a231c'}
   };
   const CONFLICT_WINDOW_MIN = 30;
   let currentFilter = 'all';
@@ -1006,20 +1163,22 @@
   }
 
   async function init() {
+    const vl0 = $('verLabel'); if (vl0) vl0.textContent = APP_VERSION;
+    reg('[app] versão', APP_VERSION, 'iniciando');
     showStatus("Baixando agenda…", false);
     try {
-      const res = await fetch(API_URL + "?action=read&_=" + Date.now(), { cache: 'no-store' });
-      globalData = await res.json() || {};
+      globalData = await baixarDaNuvem('abertura');
       showStatus("Agenda carregada");
     } catch(err) {
-      console.error(err);
-      showStatus("⚠ Sem conexão, modo offline");
+      const etapa = (err.diag && err.diag.etapa) || 'desconhecida';
+      reg('[app] abertura em modo offline | etapa da falha:', etapa);
+      showStatus("⚠ Offline (" + etapa + ") · veja Ajustes");
     }
     loadLeadMinutes();
     drawCalendar();
     renderList();
     const vl = $('verLabel'); if (vl) vl.textContent = APP_VERSION;
-    reg('[app] versão ' + APP_VERSION + ' iniciada');
+    reg('[app] interface montada');
     setupApp();
     scheduleReschedule();
   }
@@ -1117,7 +1276,7 @@
     if(!ev) return;
     const wd = weekdaysLong[new Date(y,m,d).getDay()];
     const dateStr = `${String(d).padStart(2,'0')}/${String(m+1).padStart(2,'0')}/${y}`;
-    const lines = ['📅 *Agenda da Professora Léo Simão*', '', '*' + ev.title + '*', '🗓 ' + wd + ', ' + dateStr];
+    const lines = ['📅 *Agenda da Elzilene da CUT*', '', '*' + ev.title + '*', '🗓 ' + wd + ', ' + dateStr];
     if(ev.time) lines.push('🕒 ' + ev.time);
     const loc = [ev.location, ev.city].filter(Boolean).join(', ');
     if(loc) lines.push('📍 ' + loc);
@@ -1221,6 +1380,12 @@
     $('panelOverlay').classList.add('open');
     $('panel').classList.add('open');
     $('panel').setAttribute('aria-hidden','false');
+  }
+  function exportarDiaAtual(){
+    if (!currentDayKey) { reg('[export-dia] nenhum dia selecionado'); return; }
+    const {y,m,d} = currentDayKey;
+    reg('[export-dia] pedido pelo painel:', `${d}/${m+1}/${y}`);
+    exportImage('dia', y, m, d);
   }
   function closePanel() {
     $('panelOverlay').classList.remove('open');
@@ -1361,14 +1526,23 @@
     showStatus("Salvando…", false);
     const dateLabel = `${d}/${m+1}/${y}`;
     const url = `${API_URL}?action=save&id=${id}&dateLabel=${encodeURIComponent(dateLabel)}&color=${encodeURIComponent(color)}&text=${encodeURIComponent(text)}`;
+    reg('[save] enviando', id, '| tamanho da URL:', url.length, 'caracteres');
+    if (url.length > 7000) reg('[save] AVISO: URL muito longa, o dia tem compromissos demais');
+    const t0 = performance.now();
     try {
       const fetchPromise = fetch(url, { mode:'no-cors' });
-      const timeoutPromise = new Promise(r => setTimeout(r, 4000));
-      await Promise.race([fetchPromise, timeoutPromise]);
+      const timeoutPromise = new Promise(r => setTimeout(() => r('__timeout__'), 8000));
+      const quem = await Promise.race([fetchPromise, timeoutPromise]);
+      const ms = Math.round(performance.now() - t0);
+      if (quem === '__timeout__') reg('[save] AVISO: passou de 8s sem resposta |', id);
+      else reg('[save] requisição concluída |', id, '|', ms, 'ms');
       delete pendentes[id];
-      reg('[sync] salvo na nuvem:', id, '| pendentes restantes:', Object.keys(pendentes).length);
+      reg('[save] salvo:', id, '| pendentes restantes:', Object.keys(pendentes).length);
       showStatus("✓ Salvo");
-    } catch(err) { console.error('[sync] falha ao salvar', id, err); showStatus("⚠ Erro ao salvar"); }
+    } catch(err) {
+      reg('[save] FALHA ao salvar', id, ':', String(err));
+      showStatus("⚠ Erro ao salvar");
+    }
   }
 
   function changeMonth(delta) { dt.setMonth(dt.getMonth() + delta); drawCalendar(); }
@@ -1378,8 +1552,7 @@
     if (exportando) { reg('[sync] recarga adiada: exportação em andamento'); return; }
     showStatus("Recarregando…", false);
     try{
-      const res = await fetch(API_URL + "?action=read&_=" + Date.now(), { cache: 'no-store' });
-      const daNuvem = await res.json() || {};
+      const daNuvem = await baixarDaNuvem('recarga');
       // Alterações ainda não confirmadas vencem sobre o que veio da nuvem
       const ids = Object.keys(pendentes);
       if (ids.length) {
@@ -1391,7 +1564,11 @@
       drawCalendar(); renderList();
       scheduleReschedule();
       showStatus("✓ Agenda atualizada");
-    }catch(err){ console.error('[sync] falha ao recarregar', err); showStatus("⚠ Sem conexão"); }
+    }catch(err){
+      const etapa = (err.diag && err.diag.etapa) || 'desconhecida';
+      reg('[sync] falha ao recarregar | etapa:', etapa);
+      showStatus("⚠ Offline (" + etapa + ")");
+    }
   }
 
   /* ============ NOTIFICAÇÕES (Web / PWA) ============ */
@@ -1561,14 +1738,14 @@
 
   /* ============ Exportar imagem do mês ============ */
   const EXPORT_CAT = {
-    reuniao:  { border:'#1f4e8c', bg:'#e8eff8', text:'#16365e' },
-    evento:   { border:'#c8102e', bg:'#fbeaea', text:'#7a0a1c' },
-    solenidade:{border:'#146b74', bg:'#e4f0f1', text:'#0c4a50' },
-    imprensa: { border:'#a04e0f', bg:'#fbeee2', text:'#6f370b' },
-    visita:   { border:'#1f6f4a', bg:'#e8f3ec', text:'#154e35' },
-    pessoal:  { border:'#5b3a8a', bg:'#efeaf6', text:'#3e2860' },
-    publico:  { border:'#c8102e', bg:'#fbeaea', text:'#7a0a1c' },
-    outro:    { border:'#4a4640', bg:'#f0ece6', text:'#2a2620' }
+    reuniao:  { border:'#2b4a6f', bg:'#e6ecf4', text:'#1e3450' },
+    evento:   { border:'#8e1d13', bg:'#f7e6e2', text:'#4e0f0a' },
+    solenidade:{border:'#125a61', bg:'#e3eff0', text:'#0b3f44' },
+    imprensa: { border:'#8a4a12', bg:'#f8ece0', text:'#5f320c' },
+    visita:   { border:'#1f6046', bg:'#e7f1ea', text:'#14412f' },
+    pessoal:  { border:'#52306e', bg:'#ede9f2', text:'#38214c' },
+    publico:  { border:'#8e1d13', bg:'#f7e6e2', text:'#4e0f0a' },
+    outro:    { border:'#4a4038', bg:'#f0ece6', text:'#2a231c' }
   };
 
   async function getPhotoDataURL() {
@@ -1601,7 +1778,7 @@
     wrapper.style.cssText = `
       position:fixed;top:0;left:-10000px;
       width:1280px;padding:32px;
-      background:linear-gradient(135deg,#faf2e6 0%,#f5e8d6 100%);
+      background:linear-gradient(135deg,#faf3e8 0%,#f2e4d2 100%);
       box-sizing:border-box;
       font-family:'Manrope',system-ui,sans-serif;
       color:#1a1411;
@@ -1623,12 +1800,12 @@
         const events = getEvents(y, m, dc);
         const wkd = new Date(y, m, dc).getDay();
         const isWeekend = wkd === 0 || wkd === 6;
-        const dayBg = isToday(dc) ? 'background:linear-gradient(180deg,rgba(124,58,237,.12) 0%,transparent 70%);' : '';
-        const dayNumColor = isWeekend ? '#c8102e' : '#1a1411';
+        const dayBg = isToday(dc) ? 'background:linear-gradient(180deg,rgba(142,29,19,.12) 0%,transparent 70%);' : '';
+        const dayNumColor = isWeekend ? '#8e1d13' : '#1a1411';
 
         let dayNumHTML;
         if (isToday(dc)) {
-          dayNumHTML = `<div style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;background:linear-gradient(135deg,#c8102e,#7a0a1c);color:#fff;border-radius:50%;font-family:'Fraunces',serif;font-size:13px;font-weight:700;margin-bottom:6px;line-height:1;">${dc}</div>`;
+          dayNumHTML = `<div style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;background:linear-gradient(135deg,#8e1d13,#4e0f0a);color:#fff;border-radius:50%;font-family:'Fraunces',serif;font-size:13px;font-weight:700;margin-bottom:6px;line-height:1;">${dc}</div>`;
         } else {
           dayNumHTML = `<div style="font-family:'Fraunces',serif;font-size:15px;font-weight:600;color:${dayNumColor};margin-bottom:6px;line-height:1;">${dc}</div>`;
         }
@@ -1662,15 +1839,15 @@
     const headerCellStyle = 'padding:14px 6px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.22em;width:14.285%;border-bottom:1px solid rgba(120,80,40,.10);';
 
     const photoHTML = photoSrc
-      ? `<img src="${photoSrc}" style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid #fff;box-shadow:0 0 0 1px #c8102e,0 8px 24px rgba(124,58,237,.30);flex-shrink:0;display:block;">`
-      : `<div style="width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,#c8102e,#7a0a1c);box-shadow:0 0 0 4px #fff,0 0 0 5px #c8102e;flex-shrink:0;"></div>`;
+      ? `<img src="${photoSrc}" style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid #fff;box-shadow:0 0 0 1px #8e1d13,0 8px 24px rgba(142,29,19,.30);flex-shrink:0;display:block;">`
+      : `<div style="width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,#8e1d13,#4e0f0a);box-shadow:0 0 0 4px #fff,0 0 0 5px #8e1d13;flex-shrink:0;"></div>`;
 
     wrapper.innerHTML = `
       <div style="display:flex;align-items:center;gap:24px;padding:24px 28px;margin-bottom:24px;background:#fff;border-radius:18px;border:1px solid rgba(0,0,0,.06);box-shadow:0 1px 2px rgba(80,40,20,.04),0 8px 24px rgba(80,40,20,.06);">
         ${photoHTML}
         <div>
-          <div style="font-family:'Fraunces',serif;font-size:32px;font-weight:700;letter-spacing:-.02em;line-height:1.1;">Professora Léo Simão</div>
-          <div style="font-size:12px;text-transform:uppercase;letter-spacing:.24em;color:#5a514a;margin-top:8px;font-weight:700;">Agenda Oficial · ${y}</div>
+          <div style="font-family:'Fraunces',serif;font-size:32px;font-weight:700;letter-spacing:-.02em;line-height:1.1;">Elzilene da CUT</div>
+          <div style="font-size:12px;text-transform:uppercase;letter-spacing:.24em;color:#5a514a;margin-top:8px;font-weight:700;">Deputada Federal · 1300 · ${y}</div>
         </div>
       </div>
 
@@ -1680,14 +1857,14 @@
 
       <table style="width:100%;border-collapse:collapse;background:#fff;border-radius:18px;overflow:hidden;border:1px solid rgba(0,0,0,.06);table-layout:fixed;box-shadow:0 1px 2px rgba(80,40,20,.04),0 8px 24px rgba(80,40,20,.06);">
         <thead>
-          <tr style="background:#faf6ed;">
-            <th style="${headerCellStyle}color:#c8102e;">Dom</th>
+          <tr style="background:#f9f4ea;">
+            <th style="${headerCellStyle}color:#8e1d13;">Dom</th>
             <th style="${headerCellStyle}color:#9a8f86;">Seg</th>
             <th style="${headerCellStyle}color:#9a8f86;">Ter</th>
             <th style="${headerCellStyle}color:#9a8f86;">Qua</th>
             <th style="${headerCellStyle}color:#9a8f86;">Qui</th>
             <th style="${headerCellStyle}color:#9a8f86;">Sex</th>
-            <th style="${headerCellStyle}color:#c8102e;">Sáb</th>
+            <th style="${headerCellStyle}color:#8e1d13;">Sáb</th>
           </tr>
         </thead>
         <tbody>${bodyHTML}</tbody>
@@ -1699,7 +1876,7 @@
 
   // ===== Nova exportação: estilo "Compromissos" em 1 a 3 colunas =====
   // Paleta rotativa: cada dia recebe uma cor, e todos os compromissos do dia usam ela
-  const DAY_PALETTE = ['#c8102e','#c8102e','#0f766e','#1f4e8c','#b0134d','#a04e0f','#146b74','#1f6f4a'];
+  const DAY_PALETTE = ['#8e1d13','#8e1d13','#0f5f58','#2b4a6f','#7c1a3c','#8a4a12','#125a61','#1f6046'];
   function hexRgba(hex, a) {
     const n = parseInt(hex.slice(1), 16);
     return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`;
@@ -1757,21 +1934,21 @@
     const wrapW = pad*2 + N*colW + (N-1)*gap;
 
     const photoHTML = photoSrc
-      ? `<img src="${photoSrc}" style="width:104px;height:104px;border-radius:50%;object-fit:cover;border:4px solid #fff;box-shadow:0 0 0 1px #c8102e,0 8px 24px ${hexRgba('#c8102e',.30)};flex-shrink:0;display:block;">`
-      : `<div style="width:104px;height:104px;border-radius:50%;background:linear-gradient(135deg,#c8102e,#7a0a1c);box-shadow:0 0 0 4px #fff,0 0 0 5px #c8102e;flex-shrink:0;"></div>`;
+      ? `<img src="${photoSrc}" style="width:104px;height:104px;border-radius:50%;object-fit:cover;border:4px solid #fff;box-shadow:0 0 0 1px #8e1d13,0 8px 24px ${hexRgba('#8e1d13',.30)};flex-shrink:0;display:block;">`
+      : `<div style="width:104px;height:104px;border-radius:50%;background:linear-gradient(135deg,#8e1d13,#4e0f0a);box-shadow:0 0 0 4px #fff,0 0 0 5px #8e1d13;flex-shrink:0;"></div>`;
 
     const resumo = evCount
       ? `${evCount} compromisso${evCount>1?'s':''} em ${groupEls.length} dia${groupEls.length>1?'s':''}`
       : '';
 
     const wrapper = document.createElement('div');
-    wrapper.style.cssText = `position:fixed;top:0;left:-10000px;width:${wrapW}px;padding:${pad}px;background:linear-gradient(135deg,#faf2e6 0%,#f5e8d6 100%);box-sizing:border-box;font-family:'Manrope',system-ui,sans-serif;color:#1a1411;`;
+    wrapper.style.cssText = `position:fixed;top:0;left:-10000px;width:${wrapW}px;padding:${pad}px;background:linear-gradient(135deg,#faf3e8 0%,#f2e4d2 100%);box-sizing:border-box;font-family:'Manrope',system-ui,sans-serif;color:#1a1411;`;
     wrapper.innerHTML = `
       <div style="display:flex;align-items:center;gap:22px;padding:22px 26px;margin-bottom:20px;background:#fff;border-radius:18px;border:1px solid rgba(0,0,0,.06);box-shadow:0 8px 24px rgba(80,40,20,.08);">
         ${photoHTML}
         <div style="min-width:0;">
-          <div style="font-family:'Fraunces',serif;font-size:38px;font-weight:700;letter-spacing:-.02em;line-height:1.1;">Professora Léo Simão</div>
-          <div style="font-size:15px;text-transform:uppercase;letter-spacing:.2em;color:#5a514a;margin-top:8px;font-weight:700;">Agenda Oficial · ${y}</div>
+          <div style="font-family:'Fraunces',serif;font-size:38px;font-weight:700;letter-spacing:-.02em;line-height:1.1;">Elzilene da CUT</div>
+          <div style="font-size:15px;text-transform:uppercase;letter-spacing:.2em;color:#5a514a;margin-top:8px;font-weight:700;">Deputada Federal · 1300 · ${y}</div>
         </div>
         <div style="margin-left:auto;text-align:right;flex-shrink:0;">
           <div style="font-family:'Fraunces',serif;font-size:44px;font-weight:600;letter-spacing:-.03em;line-height:1;">${months[m]} <span style="color:#9a8f86;font-weight:400;">${y}</span></div>
@@ -1799,8 +1976,83 @@
     return { wrapper, width: wrapW };
   }
 
-  async function exportImage(modo) {
+  // ===== Exportação de UM dia: coluna única, vertical =====
+  function buildDayExportContainer(photoSrc, y, m, d) {
+    const pad = 30, colW = 660;
+    const wrapW = pad * 2 + colW;
+
+    const evs = getEvents(y, m, d).slice()
+      .sort((a, b) => (a.time || '99').localeCompare(b.time || '99'));
+
+    reg('[export-dia] montando', `${d}/${m+1}/${y}`, '|', evs.length, 'compromisso(s)');
+
+    const wd = new Date(y, m, d).getDay();
+    const dataCurta = `${String(d).padStart(2,'0')}/${String(m+1).padStart(2,'0')}/${y}`;
+    const cabecalhoDia = `${weekdaysLong[wd]} · ${dataCurta}`;
+    const corDia = '#8e1d13';
+
+    let cards = '';
+    evs.forEach(ev => {
+      const cat = ev.category || 'outro';
+      const cor = CAT_COLORS[cat] || corDia;
+      const loc = [ev.location, ev.city].filter(Boolean).join(', ');
+      const hora = ev.time ? ev.time : 'Dia';
+      cards += `<div style="padding:15px 18px;margin-bottom:10px;background:#fff;border-radius:12px;border-left:6px solid ${cor};box-shadow:0 1px 4px ${hexRgba(cor,.20)};">
+        <div style="display:flex;align-items:baseline;gap:14px;">
+          <span style="font-family:'Fraunces',serif;font-size:30px;font-weight:700;color:${cor};font-variant-numeric:tabular-nums;line-height:1.1;white-space:nowrap;">${hora}</span>
+          <span style="font-size:28px;font-weight:700;color:#1a1411;line-height:1.25;overflow-wrap:break-word;">${escapeHTML(ev.title)}</span>
+        </div>
+        ${loc ? `<div style="margin-top:9px;font-size:21px;color:#5a514a;line-height:1.35;overflow-wrap:break-word;">${escapeHTML(loc)}</div>` : ''}
+        ${ev.notes ? `<div style="margin-top:7px;font-size:20px;color:#5a514a;line-height:1.4;overflow-wrap:break-word;">${escapeHTML(ev.notes)}</div>` : ''}
+        <div style="margin-top:11px;font-size:16px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:${cor};">${escapeHTML(CAT_LABELS[cat] || 'Compromisso')}</div>
+      </div>`;
+    });
+
+    if (!evs.length) {
+      cards = `<div style="padding:44px 24px;text-align:center;color:#9a8f86;background:#fff;border:1px dashed rgba(120,80,40,.25);border-radius:12px;font-size:22px;font-weight:600;">Nenhum compromisso neste dia.</div>`;
+    }
+
+    const photoHTML = photoSrc
+      ? `<img src="${photoSrc}" style="width:96px;height:96px;border-radius:50%;object-fit:cover;border:4px solid #fff;box-shadow:0 0 0 1px ${corDia},0 8px 24px ${hexRgba(corDia,.30)};flex-shrink:0;display:block;">`
+      : `<div style="width:96px;height:96px;border-radius:50%;background:linear-gradient(135deg,#8e1d13,#4e0f0a);box-shadow:0 0 0 4px #fff,0 0 0 5px ${corDia};flex-shrink:0;"></div>`;
+
+    const resumo = evs.length
+      ? `${evs.length} compromisso${evs.length > 1 ? 's' : ''}`
+      : 'Agenda livre';
+
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = `position:fixed;top:0;left:-10000px;width:${wrapW}px;padding:${pad}px;background:linear-gradient(135deg,#faf3e8 0%,#f2e4d2 100%);box-sizing:border-box;font-family:'Manrope',system-ui,sans-serif;color:#1a1411;`;
+    wrapper.innerHTML = `
+      <div style="display:flex;align-items:center;gap:20px;padding:20px 24px;margin-bottom:18px;background:#fff;border-radius:18px;border:1px solid rgba(0,0,0,.06);box-shadow:0 8px 24px rgba(80,40,20,.08);">
+        ${photoHTML}
+        <div style="min-width:0;">
+          <div style="font-family:'Fraunces',serif;font-size:32px;font-weight:700;letter-spacing:-.02em;line-height:1.1;">Elzilene da CUT</div>
+          <div style="font-size:14px;text-transform:uppercase;letter-spacing:.2em;color:#5a514a;margin-top:7px;font-weight:700;">Deputada Federal · 1300</div>
+        </div>
+      </div>
+
+      <div style="border-radius:14px;overflow:hidden;box-shadow:0 2px 10px ${hexRgba(corDia,.20)};">
+        <div style="background:${corDia};color:#fff;padding:14px 20px;display:flex;align-items:baseline;justify-content:space-between;gap:16px;">
+          <span style="font-family:'Fraunces',serif;font-size:31px;font-weight:700;line-height:1.15;letter-spacing:-.01em;">${cabecalhoDia}</span>
+          <span style="font-size:17px;font-weight:700;opacity:.88;white-space:nowrap;">${resumo}</span>
+        </div>
+        <div style="background:${hexRgba(corDia,.09)};padding:12px 12px 2px;">${cards}</div>
+      </div>
+    `;
+
+    return { wrapper, width: wrapW };
+  }
+
+  async function exportImage(modo, ay, am, ad) {
     modo = modo || 'lista';
+
+    // Guarda o dia antes de fechar o painel, porque closePanel limpa a seleção.
+    let dY = ay, dM = am, dD = ad;
+    if (modo === 'dia' && dY === undefined) {
+      if (currentDayKey) { dY = currentDayKey.y; dM = currentDayKey.m; dD = currentDayKey.d; }
+      else { const h = new Date(); dY = h.getFullYear(); dM = h.getMonth(); dD = h.getDate(); }
+    }
+
     closePanel();
     exportando = true;
     showStatus("Gerando imagem…", false);
@@ -1813,6 +2065,9 @@
     if (modo === 'calendario') {
       wrapper = buildExportContainer(photoSrc);
       width = 1280;
+    } else if (modo === 'dia') {
+      const r = buildDayExportContainer(photoSrc, dY, dM, dD);
+      wrapper = r.wrapper; width = r.width;
     } else {
       const r = buildListExportContainer(photoSrc);
       wrapper = r.wrapper; width = r.width;
@@ -1831,9 +2086,13 @@
         windowWidth: width,
         windowHeight: wrapper.offsetHeight
       });
-      const sufixo = (modo === 'calendario') ? 'Calendario' : 'Lista';
       const link = document.createElement('a');
-      link.download = `Agenda_${sufixo}_${months[dt.getMonth()]}_${dt.getFullYear()}.png`;
+      if (modo === 'dia') {
+        link.download = `Agenda_Dia_${String(dD).padStart(2,'0')}-${String(dM+1).padStart(2,'0')}-${dY}.png`;
+      } else {
+        const sufixo = (modo === 'calendario') ? 'Calendario' : 'Lista';
+        link.download = `Agenda_${sufixo}_${months[dt.getMonth()]}_${dt.getFullYear()}.png`;
+      }
       link.href = canvas.toDataURL('image/png');
       link.click();
       showStatus("✓ Imagem salva");

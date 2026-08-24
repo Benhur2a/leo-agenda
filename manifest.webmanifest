@@ -1,14 +1,14 @@
 {
-  "name": "Agenda Léo Simão",
-  "short_name": "Agenda Léo",
-  "description": "Agenda Oficial da Professora Léo Simão",
+  "name": "Agenda Elzilene da CUT",
+  "short_name": "Agenda Elzilene",
+  "description": "Agenda Oficial da Elzilene da CUT · Deputada Federal 1300",
   "lang": "pt-BR",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#f5e8d6",
-  "theme_color": "#c8102e",
+  "background_color": "#f2e4d2",
+  "theme_color": "#8e1d13",
   "icons": [
     {
       "src": "icons/icon-192.png",
