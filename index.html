@@ -945,7 +945,7 @@
   let selectedCategory = "reuniao";
   let editingEventId = null;
   let saveTimer = null, statusHideTimer = null, notifTimer = null;
-  const APP_VERSION = '2026.08.25-b';
+  const APP_VERSION = '2026.08.25-c';
   const diagLog = [];
   function reg(){
     const partes = Array.prototype.slice.call(arguments).map(v => {
@@ -2049,6 +2049,89 @@
     return { wrapper, width: wrapW };
   }
 
+  /* ===== Entrega da imagem =====
+     No iPhone o download comum não vai para o app Fotos. Ele cai em
+     Arquivos, dentro de Transferências. Por isso, só no iPhone, o app
+     abre a folha de compartilhamento do próprio sistema.
+     Em qualquer outro aparelho o comportamento continua o mesmo. */
+
+  function ehIOS(){
+    const ua = navigator.userAgent || '';
+    const aparelho = /iPad|iPhone|iPod/.test(ua);
+    // O iPad moderno se identifica como Mac. O toque denuncia que é iPad.
+    const ipadNovo = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+    return aparelho || ipadNovo;
+  }
+
+  function baixarPorLink(canvas, nomeArquivo){
+    const link = document.createElement('a');
+    link.download = nomeArquivo;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    reg('[entrega] download comum disparado |', nomeArquivo);
+  }
+
+  async function entregarImagem(canvas, nomeArquivo){
+    const ios = ehIOS();
+    reg('[entrega] iPhone ou iPad:', ios, '| arquivo:', nomeArquivo);
+
+    if (!ios) {
+      baixarPorLink(canvas, nomeArquivo);
+      showStatus("✓ Imagem salva");
+      return 'download';
+    }
+
+    if (!navigator.canShare || !navigator.share) {
+      reg('[entrega] este iOS não tem compartilhamento nativo. Usando download.');
+      baixarPorLink(canvas, nomeArquivo);
+      showStatus("✓ Salvo em Arquivos › Transferências");
+      return 'download-sem-suporte';
+    }
+
+    let blob = null;
+    try {
+      blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+    } catch(err) {
+      reg('[entrega] falha ao gerar o blob:', String(err));
+    }
+
+    if (!blob) {
+      reg('[entrega] blob vazio. Caindo no download.');
+      baixarPorLink(canvas, nomeArquivo);
+      showStatus("✓ Salvo em Arquivos › Transferências");
+      return 'download-sem-blob';
+    }
+
+    reg('[entrega] imagem pronta |', Math.round(blob.size / 1024), 'KB');
+
+    try {
+      const arquivo = new File([blob], nomeArquivo, { type: 'image/png' });
+      if (!navigator.canShare({ files: [arquivo] })) {
+        reg('[entrega] o iOS recusou compartilhar arquivo. Usando download.');
+        baixarPorLink(canvas, nomeArquivo);
+        showStatus("✓ Salvo em Arquivos › Transferências");
+        return 'download-recusado';
+      }
+      await navigator.share({ files: [arquivo] });
+      reg('[entrega] compartilhado pela folha do iOS');
+      showStatus("✓ Pronto para salvar ou enviar");
+      return 'compartilhado';
+
+    } catch(err) {
+      const nome = (err && err.name) || 'Erro';
+      if (nome === 'AbortError') {
+        reg('[entrega] o usuário fechou a folha de compartilhamento');
+        showStatus("Compartilhamento cancelado");
+        return 'cancelado';
+      }
+      reg('[entrega] falha no compartilhamento:', nome, '|', String(err));
+      reg('[entrega] causa provável: o toque expirou durante a geração');
+      baixarPorLink(canvas, nomeArquivo);
+      showStatus("✓ Salvo em Arquivos › Transferências");
+      return 'download-apos-falha';
+    }
+  }
+
   async function exportImage(modo, ay, am, ad) {
     modo = modo || 'lista';
 
@@ -2092,16 +2175,14 @@
         windowWidth: width,
         windowHeight: wrapper.offsetHeight
       });
-      const link = document.createElement('a');
+      let nomeArquivo;
       if (modo === 'dia') {
-        link.download = `Agenda_Dia_${String(dD).padStart(2,'0')}-${String(dM+1).padStart(2,'0')}-${dY}.png`;
+        nomeArquivo = `Agenda_Dia_${String(dD).padStart(2,'0')}-${String(dM+1).padStart(2,'0')}-${dY}.png`;
       } else {
         const sufixo = (modo === 'calendario') ? 'Calendario' : 'Lista';
-        link.download = `Agenda_${sufixo}_${months[dt.getMonth()]}_${dt.getFullYear()}.png`;
+        nomeArquivo = `Agenda_${sufixo}_${months[dt.getMonth()]}_${dt.getFullYear()}.png`;
       }
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-      showStatus("✓ Imagem salva");
+      await entregarImagem(canvas, nomeArquivo);
     } catch(err) {
       console.error(err);
       showStatus("⚠ Erro ao gerar imagem");
